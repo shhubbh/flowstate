@@ -30,7 +30,7 @@ No existing tool combines intelligence + spatial persistence + cheap restructuri
 
 5. **Text channel for escalation** — when gesture isn't enough ("what's the biggest risk here?"), user types. Agent responds in text AND on the canvas.
 
-The space persists. Return tomorrow, pick up where you left off.
+The current prototype intentionally starts fresh on each visit while persistent workspaces remain deferred.
 
 ---
 
@@ -86,7 +86,7 @@ Maps directly to the problem space findings:
 
 ## Tech Stack
 
-tldraw SDK (canvas) + React/Vite + Tailwind + Claude API (direct fetch). Three custom shapes: ThoughtNode, Cluster, AgentAnnotation. Connections via tldraw's built-in arrows. State in tldraw store + localStorage.
+tldraw SDK (canvas) + React/Vite + Tailwind + Claude API (direct fetch). Three custom shapes: ThoughtNode, Cluster, AgentAnnotation. Connections via tldraw's built-in arrows. State lives in the active session only; cross-session browser persistence is currently disabled for stability.
 
 ---
 

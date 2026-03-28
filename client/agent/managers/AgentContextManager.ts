@@ -51,7 +51,7 @@ export class AgentContextManager extends BaseAgentManager {
 
 	/**
 	 * Set the context items directly.
-	 * Primarily used for loading persisted state.
+	 * Primarily used when hydrating serialized agent state.
 	 * @param items - The context items to set.
 	 */
 	setItems(items: ContextItem[]) {

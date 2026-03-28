@@ -78,14 +78,8 @@ export const TldrawAgentAppProvider = memo(function TldrawAgentAppProvider({
 	useEffect(() => {
 		const instance = new TldrawAgentApp(editor, { onError: handleError })
 
-		// Load persisted state first (this will create agents from persisted data)
-		instance.persistence.loadState()
-
-		// Ensure at least one agent exists (creates one if none were loaded)
+		// Always start with a fresh agent for the current editor instance.
 		const defaultAgent = instance.agents.ensureAtLeastOneAgent()
-
-		// Start auto-saving (must be after loadState to avoid saving during load)
-		instance.persistence.startAutoSave()
 
 		setApp(instance)
 

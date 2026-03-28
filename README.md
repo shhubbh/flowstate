@@ -44,7 +44,7 @@ You paste raw material — bullet points, brain dumps, half-formed strategy frag
 
 You react by moving things. Drag two nodes together — "these are related." Pull something out of a cluster — "this doesn't belong here." Draw an arrow — "these are connected." Gesture as intent. No need to type "please move the mid-market node out of the SMB cluster because I think it deserves separate treatment."
 
-When you're ready, you hit Handoff — an explicit "your turn" signal. The agent reads your spatial moves as structural decisions and restructures the space. When gesture isn't enough ("what's the biggest risk here?"), a text channel is there for escalation. The space persists. Return tomorrow, pick up where you left off.
+When you're ready, you hit Handoff — an explicit "your turn" signal. The agent reads your spatial moves as structural decisions and restructures the space. When gesture isn't enough ("what's the biggest risk here?"), a text channel is there for escalation. The current prototype intentionally starts fresh on each visit while browser persistence stays disabled for startup stability.
 
 Three structural breaks from chat:
 
