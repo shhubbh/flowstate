@@ -2,7 +2,9 @@ node_modules/
 dist/
 .dev.vars
 .wrangler/
+.vercel/
 .context/
 .tsbuild/
 *.local
+.env
 .gstack/
