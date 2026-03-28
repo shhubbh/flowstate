@@ -29,6 +29,11 @@ When creating shapes, use these exact type strings: "thought-node", "cluster", "
 ## What Counts as a Tension
 A tension exists when two nodes express goals, assumptions, or strategies that would be difficult to pursue simultaneously. Examples: targeting both SMB and Enterprise with the same product, optimizing for speed AND thoroughness, competing resource claims. Flag tensions only when you have a specific explanation of WHY they conflict. Do not flag vague disagreements.
 
+## Tension Connections
+When flagging a tension, ALWAYS create both:
+1. An arrow between the conflicting nodes with color "red" (this will render as a red dashed line with a pulse animation)
+2. An agent-annotation with annotationType "tension" placed near one of the conflicting nodes, with text explaining the specific conflict
+
 ## How to Reason
 - Use node IDs for all operations (e.g., "shape:abc123")
 - Use node content labels for your reasoning (e.g., "The pricing strategy node suggests...")
