@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
+import { useValue } from 'tldraw'
 import { useTldrawAgentApp } from '../../agent/TldrawAgentAppProvider'
 import type { HandoffDiffSummary } from '../../lib/diff-utils'
 import { UndoManager } from '../../lib/undo-manager'
@@ -10,7 +11,7 @@ import { UndoButton } from './UndoButton'
 
 export function BottomBar() {
 	const editor = useTldrawAgentApp().editor
-	const shapeCount = editor.getCurrentPageShapes().length
+	const shapeCount = useValue('shapeCount', () => editor.getCurrentPageShapes().length, [editor])
 	const undoManagerRef = useRef(new UndoManager())
 
 	const [lastDiff, setLastDiff] = useState<HandoffDiffSummary | null>(null)

@@ -16,7 +16,7 @@ export function HandoffButton({ undoManager, onHandoffComplete }: HandoffButtonP
 	const [isThinking, setIsThinking] = useState(false)
 	const beforeShapesRef = useRef<Map<TLShapeId, TLShape>>(new Map())
 
-	const shapeCount = editor.getCurrentPageShapes().length
+	const shapeCount = useValue('shapeCount', () => editor.getCurrentPageShapes().length, [editor])
 	const isGenerating = useValue('isGenerating', () => agent.requests.isGenerating(), [agent])
 
 	// Detect agent completion for diff computation + thinking state reset
