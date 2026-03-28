@@ -61,13 +61,13 @@ The space IS the interface.
 ## Quick Start
 
 ```bash
-cp .dev.vars.example .dev.vars
-# Add your ANTHROPIC_API_KEY to .dev.vars
+npm install -g vercel   # install Vercel CLI if needed
 npm install
+echo "ANTHROPIC_API_KEY=sk-..." > .env.local
 npm run dev
 ```
 
-Open `localhost:5173`. Click through the landing page, then hit **DEMO** to enter the canvas with pre-loaded strategic fragments. Move nodes around. Hit **Handoff**. Watch the agent restructure your thinking.
+Open `localhost:3000`. Click through the landing page, then hit **DEMO** to enter the canvas with pre-loaded strategic fragments. Move nodes around. Hit **Handoff**. Watch the agent restructure your thinking.
 
 ---
 
