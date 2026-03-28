@@ -1,4 +1,4 @@
-# Flowstate
+# Flowstate:
 
 A spatial co-thinking tool where an AI agent and a founder jointly build and reshape a living map of strategic decisions — through gesture, not chat.
 
