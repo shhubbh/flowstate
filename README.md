@@ -60,20 +60,24 @@ The space IS the interface.
 
 ## Quick Start
 
+Requires [Node.js](https://nodejs.org/) v18+.
+
 ```bash
-npm install -g vercel   # install Vercel CLI if needed
+npm install -g vercel          # one-time: install Vercel CLI
+git clone <repo-url>
+cd kyoto
 npm install
-echo "ANTHROPIC_API_KEY=sk-..." > .env.local
-npm run dev
+echo "ANTHROPIC_API_KEY=sk-ant-..." > .env.local   # your Anthropic key
+npm run dev                    # starts on localhost:3000
 ```
 
-Open `localhost:3000`. Click through the landing page, then hit **DEMO** to enter the canvas with pre-loaded strategic fragments. Move nodes around. Hit **Handoff**. Watch the agent restructure your thinking.
+Open [localhost:3000](http://localhost:3000). Hit **Load Demo** to populate the canvas with strategic fragments. Drag nodes around to restructure. Hit **Handoff** to let the agent rethink the map. Use the text channel (pencil icon) to ask follow-up questions.
 
 ---
 
 ## Built With
 
-[tldraw](https://tldraw.dev) canvas SDK, React, Vite, Tailwind, and Claude. Three custom shapes — ThoughtNode (draggable text cards), ClusterShape (named group containers), and AgentAnnotation (semantic badges for tensions, insights, and questions). The visual identity is called Dark Observatory: dark canvas, glass-morphism nodes, grain texture, and semantic color that only appears when it carries meaning. Deployed on Vercel.
+[tldraw](https://tldraw.dev) canvas SDK, React, Vite, Tailwind, and Claude. Three custom shapes — ThoughtNode (draggable text cards), ClusterShape (named group containers), and AgentAnnotation (semantic badges for tensions, insights, and questions). The visual identity is called Dark Observatory: dark canvas, glass-morphism nodes, grain texture, and semantic color that only appears when it carries meaning.
 
 ---
 
