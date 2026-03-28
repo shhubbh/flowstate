@@ -12,7 +12,12 @@ export interface AgentModelDefinition {
 
 export const AGENT_MODEL_DEFINITIONS = {
 	// Anthropic models
-	// sonnet 4.5 is recommended
+	'claude-sonnet-4-6': {
+		name: 'claude-sonnet-4-6',
+		id: 'claude-sonnet-4-6',
+		provider: 'anthropic',
+	},
+
 	'claude-sonnet-4-5': {
 		name: 'claude-sonnet-4-5',
 		id: 'claude-sonnet-4-5',
@@ -48,7 +53,7 @@ export const AGENT_MODEL_DEFINITIONS = {
 	},
 } as const
 
-export const DEFAULT_MODEL_NAME: AgentModelName = 'claude-sonnet-4-5'
+export const DEFAULT_MODEL_NAME: AgentModelName = 'claude-sonnet-4-6'
 
 /**
  * Check if a string is a valid AgentModelName.
