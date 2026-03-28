@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { TLShape, TLShapeId, useEditor, useValue } from 'tldraw'
-import { useAgent } from '../../agent/TldrawAgentAppProvider'
+import { TLShape, TLShapeId, useValue } from 'tldraw'
+import { useAgent, useTldrawAgentApp } from '../../agent/TldrawAgentAppProvider'
 import { computeHandoffDiff, HandoffDiffSummary } from '../../lib/diff-utils'
 import type { UndoManager } from '../../lib/undo-manager'
 import { buildHandoffPrompt } from '../../prompts/system-prompt'
@@ -12,7 +12,7 @@ interface HandoffButtonProps {
 
 export function HandoffButton({ undoManager, onHandoffComplete }: HandoffButtonProps) {
 	const agent = useAgent()
-	const editor = useEditor()
+	const editor = useTldrawAgentApp().editor
 	const [isThinking, setIsThinking] = useState(false)
 	const beforeShapesRef = useRef<Map<TLShapeId, TLShape>>(new Map())
 

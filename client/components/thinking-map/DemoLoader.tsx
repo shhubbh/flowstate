@@ -1,8 +1,9 @@
-import { createShapeId, useEditor } from 'tldraw'
+import { createShapeId } from 'tldraw'
+import { useTldrawAgentApp } from '../../agent/TldrawAgentAppProvider'
 import { DEMO_SCENARIO } from '../../data/demo-scenario'
 
 export function DemoLoader() {
-	const editor = useEditor()
+	const editor = useTldrawAgentApp().editor
 
 	const handleLoad = () => {
 		const shapes = editor.getCurrentPageShapes()
