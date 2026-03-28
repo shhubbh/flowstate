@@ -63,12 +63,20 @@ The space IS the interface.
 Requires [Node.js](https://nodejs.org/) v18+.
 
 ```bash
-npm install -g vercel          # one-time: install Vercel CLI
 git clone <repo-url>
-cd kyoto
+cd tacoma
 npm install
-echo "ANTHROPIC_API_KEY=sk-ant-..." > .env.local   # your Anthropic key
+cp .env.example .env.local     # then add your API keys
 npm run dev                    # starts on localhost:3000
+```
+
+Add at least your Anthropic key to `.env.local`:
+
+```
+ANTHROPIC_API_KEY=sk-ant-...
+# Optional: add these for GPT or Gemini model support
+# OPENAI_API_KEY=sk-...
+# GOOGLE_API_KEY=AI...
 ```
 
 Open [localhost:3000](http://localhost:3000). Hit **Load Demo** to populate the canvas with strategic fragments. Drag nodes around to restructure. Hit **Handoff** to let the agent rethink the map. Use the text channel (pencil icon) to ask follow-up questions.
