@@ -1,14 +1,36 @@
-import { useCallback, useState } from 'react'
-import { useEditor } from 'tldraw'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { TLShape, TLShapeId, useEditor, useValue } from 'tldraw'
 import { useAgent } from '../../agent/TldrawAgentAppProvider'
+import { computeHandoffDiff, HandoffDiffSummary } from '../../lib/diff-utils'
+import type { UndoManager } from '../../lib/undo-manager'
 import { buildHandoffPrompt } from '../../prompts/system-prompt'
 
-export function HandoffButton() {
+interface HandoffButtonProps {
+	undoManager: UndoManager
+	onHandoffComplete?: (diff: HandoffDiffSummary) => void
+}
+
+export function HandoffButton({ undoManager, onHandoffComplete }: HandoffButtonProps) {
 	const agent = useAgent()
 	const editor = useEditor()
 	const [isThinking, setIsThinking] = useState(false)
+	const beforeShapesRef = useRef<Map<TLShapeId, TLShape>>(new Map())
 
 	const shapeCount = editor.getCurrentPageShapes().length
+	const isGenerating = useValue('isGenerating', () => agent.requests.isGenerating(), [agent])
+
+	// Detect agent completion for diff computation + thinking state reset
+	const prevIsGenerating = useRef(false)
+	useEffect(() => {
+		if (prevIsGenerating.current && !isGenerating) {
+			// Agent just finished — compute diff
+			const afterShapes = editor.getCurrentPageShapes()
+			const diff = computeHandoffDiff(beforeShapesRef.current, afterShapes)
+			onHandoffComplete?.(diff)
+			setIsThinking(false)
+		}
+		prevIsGenerating.current = isGenerating
+	}, [isGenerating, editor, onHandoffComplete])
 
 	const handleHandoff = useCallback(async () => {
 		if (shapeCount === 0 || isThinking) return
@@ -21,6 +43,14 @@ export function HandoffButton() {
 		if (shapeCount > 30) {
 			console.warn(`Node count warning: ${shapeCount} shapes on canvas`)
 		}
+
+		// Snapshot for undo
+		undoManager.takeSnapshot(editor)
+
+		// Snapshot shapes for diff computation
+		beforeShapesRef.current = new Map(
+			editor.getCurrentPageShapes().map((s) => [s.id, s])
+		)
 
 		setIsThinking(true)
 		try {
@@ -35,11 +65,9 @@ export function HandoffButton() {
 		} catch (err) {
 			console.error('Handoff failed:', err)
 			alert('Handoff failed. Please try again.')
-		} finally {
-			// Reset after a delay to let streaming complete
-			setTimeout(() => setIsThinking(false), 2000)
+			setIsThinking(false)
 		}
-	}, [agent, editor, shapeCount, isThinking])
+	}, [agent, editor, shapeCount, isThinking, undoManager])
 
 	const isDisabled = shapeCount === 0 || isThinking
 

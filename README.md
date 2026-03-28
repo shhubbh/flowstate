@@ -28,10 +28,12 @@ Built on the [tldraw Agent Starter Kit](https://tldraw.dev/starter-kits/agent).
 ```
 client/              → React frontend
   shapes/            → Custom tldraw shapes (ThoughtNode, Cluster, AgentAnnotation)
-  components/        → UI components (BottomBar, HandoffButton, TextChannel)
+  components/        → UI components (BottomBar, HandoffButton, TextChannel, DiffToast, UndoButton, DemoLoader)
   prompts/           → AI system prompt for structural reasoning
   hooks/             → Paste handler
   agent/             → tldraw agent integration (from starter kit)
+  lib/               → Utilities (undo-manager, diff-utils)
+  data/              → Demo scenario data
 worker/              → Cloudflare Worker backend (AI provider proxy)
 shared/              → Shared types and schemas
 docs/                → Design documents and plans
@@ -57,6 +59,14 @@ Warm canvas (#f8f7f4), dotted grid, hairline-bordered white cards, muted annotat
 | [Solution (narrative)](docs/solution-narrative.md) | Hackathon-scoped pitch |
 | [Implementation Plan](docs/implementation-plan.md) | CEO + Eng reviewed plan, phased build, architecture, schemas |
 
+## Phase 2 Features
+
+- **Undo**: Snapshots canvas before each handoff; "Undo" button reverts to pre-handoff state (up to 3 levels)
+- **Diff Toast**: Floating card after handoff showing what the agent changed (clusters created, nodes moved, etc.), auto-dismisses after 10s
+- **Demo Mode**: "Load Demo" button with 10 pre-loaded GTM strategy fragments containing natural tensions
+- **Tension Visualization**: Red dashed arrows with pulse animation for conflicts; paired with tension annotation badges
+- **Animation Polish**: Fade-in animation for newly created thought nodes
+
 ## Status
 
-Phase 1 (core loop) built. Phase 2 (cherry-picks: diff toast, demo mode, tension viz, undo, animation) next.
+Phase 1 (core loop) and Phase 2 (cherry-picks) built.
