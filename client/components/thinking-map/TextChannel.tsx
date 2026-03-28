@@ -37,6 +37,7 @@ export function TextChannel() {
 		<div className="bottom-bar-text-channel">
 			<button
 				className="text-toggle"
+				onMouseDown={(e) => e.preventDefault()}
 				onClick={() => setIsExpanded(!isExpanded)}
 				title="Ask the agent something"
 			>
