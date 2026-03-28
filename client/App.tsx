@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
 	DefaultSizeStyle,
 	TLComponents,
@@ -12,6 +12,7 @@ import {
 	TldrawAgentAppContextProvider,
 	TldrawAgentAppProvider,
 } from './agent/TldrawAgentAppProvider'
+import { LandingPage } from './components/landing/LandingPage'
 import { BottomBar } from './components/thinking-map/BottomBar'
 import { GhostCursor } from './components/thinking-map/GhostCursor'
 import { CustomHelperButtons } from './components/CustomHelperButtons'
@@ -59,11 +60,29 @@ const overrides: TLUiOverrides = {
 }
 
 function App() {
+	const [view, setView] = useState<'landing' | 'exiting' | 'app'>('landing')
 	const [app, setApp] = useState<TldrawAgentApp | null>(null)
+	const [entering, setEntering] = useState(true)
 
 	const handleUnmount = useCallback(() => {
 		setApp(null)
 	}, [])
+
+	const handleLandingComplete = useCallback(() => {
+		setView('exiting')
+		setTimeout(() => setView('app'), 800)
+	}, [])
+
+	// Fade in the app container after mount
+	useEffect(() => {
+		if (view === 'app' && entering) {
+			requestAnimationFrame(() => {
+				requestAnimationFrame(() => {
+					setEntering(false)
+				})
+			})
+		}
+	}, [view, entering])
 
 	// Custom components to visualize what the agent is doing
 	const components: TLComponents = useMemo(() => {
@@ -89,9 +108,18 @@ function App() {
 		}
 	}, [app])
 
+	if (view === 'landing' || view === 'exiting') {
+		return (
+			<LandingPage
+				onComplete={handleLandingComplete}
+				exiting={view === 'exiting'}
+			/>
+		)
+	}
+
 	return (
 		<TldrawUiToastsProvider>
-			<div className="tldraw-agent-container">
+			<div className={`tldraw-agent-container${entering ? ' entering' : ''}`}>
 				<div className="tldraw-canvas">
 					<Tldraw
 						persistenceKey="thinking-map"

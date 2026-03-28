@@ -120,6 +120,7 @@ export function HandoffButton({ undoManager, onHandoffComplete, persona }: Hando
 		} catch (err) {
 			console.error('Handoff failed:', err)
 			alert('Handoff failed. Please try again.')
+			beforeShapesRef.current = new Map()
 			cleanupGhostPresence()
 			setIsThinking(false)
 		}

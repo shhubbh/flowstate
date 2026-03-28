@@ -15,8 +15,8 @@ import { UndoButton } from './UndoButton'
 export function BottomBar() {
 	const editor = useTldrawAgentApp().editor
 	const agent = useAgent()
-	const isGenerating = useValue('isGenerating', () => agent.requests.isGenerating(), [agent])
 	const shapeCount = useValue('shapeCount', () => editor.getCurrentPageShapes().length, [editor])
+	const isGenerating = useValue('isGenerating', () => agent.requests.isGenerating(), [agent])
 	const undoManagerRef = useRef(new UndoManager())
 
 	const [persona, setPersona] = useState<AgentPersona>(DEFAULT_PERSONA)
@@ -41,8 +41,8 @@ export function BottomBar() {
 			<EmptyCanvasPrompt shapeCount={shapeCount} />
 			<DiffToast diff={lastDiff} visible={diffVisible} onDismiss={handleDismissDiff} />
 			<div className="bottom-bar">
-				<DemoLoader />
-				<TextChannel />
+				<DemoLoader disabled={isGenerating} />
+				<TextChannel disabled={isGenerating} />
 				<span className="node-count">
 					{shapeCount} node{shapeCount !== 1 ? 's' : ''}
 				</span>

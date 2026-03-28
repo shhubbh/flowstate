@@ -4,21 +4,21 @@ import { BaseBoxShapeUtil, HTMLContainer, T, TLBaseShape } from 'tldraw'
 
 const ANNOTATION_STYLES = {
 	question: {
-		bg: '#2A2620',
-		color: '#9A8E7E',
-		border: '#5A5444',
+		bg: 'var(--tm-question-bg)',
+		color: 'var(--tm-question-color)',
+		border: 'var(--tm-question-border)',
 		icon: '?',
 	},
 	tension: {
-		bg: '#2E2220',
-		color: '#B85A4A',
-		border: '#5A3830',
+		bg: 'var(--tm-tension-bg)',
+		color: 'var(--tm-tension-color)',
+		border: 'var(--tm-tension-border)',
 		icon: '!',
 	},
 	insight: {
-		bg: '#1E2A22',
-		color: '#5A9A6A',
-		border: '#3A5A42',
+		bg: 'var(--tm-insight-bg)',
+		color: 'var(--tm-insight-color)',
+		border: 'var(--tm-insight-border)',
 		icon: '\u25CF', // bullet character
 	},
 } as const

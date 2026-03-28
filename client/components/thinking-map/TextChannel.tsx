@@ -1,7 +1,7 @@
 import { FormEventHandler, useCallback, useRef, useState } from 'react'
 import { useAgent, useTldrawAgentApp } from '../../agent/TldrawAgentAppProvider'
 
-export function TextChannel() {
+export function TextChannel({ disabled }: { disabled?: boolean }) {
 	const agent = useAgent()
 	const editor = useTldrawAgentApp().editor
 	const inputRef = useRef<HTMLInputElement>(null)
@@ -38,12 +38,13 @@ export function TextChannel() {
 			<button
 				className="text-toggle"
 				onMouseDown={(e) => e.preventDefault()}
-				onClick={() => setIsExpanded(!isExpanded)}
-				title="Ask the agent something"
+				onClick={() => !disabled && setIsExpanded(!isExpanded)}
+				disabled={disabled}
+				title={disabled ? 'Wait for agent to finish' : 'Ask the agent something'}
 			>
 				&#9998;
 			</button>
-			{isExpanded && (
+			{isExpanded && !disabled && (
 				<form onSubmit={handleSubmit} style={{ flex: 1, display: 'flex' }}>
 					<input
 						ref={inputRef}

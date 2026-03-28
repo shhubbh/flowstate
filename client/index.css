@@ -2,7 +2,7 @@
 @import url('tldraw/tldraw.css');
 
 :root {
-	/* Dark mode (default) */
+	/* Dark mode (default) — DESIGN.md: Dark Observatory */
 	--tm-canvas: #1E1D1B;
 	--tm-surface: #2A2826;
 	--tm-surface-hover: #3A3836;
@@ -15,6 +15,19 @@
 	--tm-text-disabled: #5A5754;
 	--tm-btn-primary: #E8E5E0;
 	--tm-btn-primary-hover: #D4D0CA;
+
+	/* Semantic annotation colors (dark values from DESIGN.md) */
+	--tm-question-bg: #2A2620;
+	--tm-question-color: #9A8E7E;
+	--tm-question-border: #5A5444;
+	--tm-tension-bg: #2E2220;
+	--tm-tension-color: #B85A4A;
+	--tm-tension-border: #5A3830;
+	--tm-insight-bg: #1E2A22;
+	--tm-insight-color: #5A9A6A;
+	--tm-insight-border: #3A5A42;
+	--tm-annotation-tooltip-bg: #2A2826;
+	--tm-annotation-tooltip-border: #5A5754;
 }
 
 /* tldraw canvas background override */
@@ -36,6 +49,11 @@ body {
 	display: grid;
 	grid-template-columns: 1fr;
 	grid-template-rows: 1fr 52px;
+	transition: opacity 0.6s ease-out;
+}
+
+.tldraw-agent-container.entering {
+	opacity: 0;
 }
 
 .tldraw-canvas {
@@ -212,6 +230,19 @@ body {
 .last-diff-btn:disabled {
 	cursor: default;
 	opacity: 0.4;
+}
+
+/* Focus rings — DESIGN.md: #5B8A72, 2px solid, 2px offset */
+.handoff-btn:focus-visible,
+.undo-btn:focus-visible,
+.demo-btn:focus-visible,
+.last-diff-btn:focus-visible,
+.text-toggle:focus-visible,
+.primary-btn:focus-visible,
+.logo-btn:focus-visible,
+.diff-toast-close:focus-visible {
+	outline: 2px solid #5B8A72;
+	outline-offset: 2px;
 }
 
 /* Diff Toast */

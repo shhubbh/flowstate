@@ -1,0 +1,220 @@
+.landing-page {
+	--landing-bg: #ffffff;
+	--landing-text: #000000;
+
+	position: fixed;
+	inset: 0;
+	background: var(--landing-bg);
+	color: var(--landing-text);
+	font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+	overflow: hidden;
+	z-index: 9999;
+	transition: opacity 0.8s ease-in, transform 0.8s ease-in;
+}
+
+.landing-page.exiting {
+	opacity: 0;
+	transform: scale(0.98);
+}
+
+/* Entry Screen */
+.landing-page .fullscreen-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	transition: opacity 1.5s ease;
+}
+
+.landing-page .fullscreen-container.hidden {
+	opacity: 0;
+	pointer-events: none;
+}
+
+/* Video Layer */
+.landing-page .layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: opacity 2s cubic-bezier(0.25, 0.1, 0.25, 1),
+		transform 2s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.landing-page .hidden-layer {
+	opacity: 0;
+	pointer-events: none;
+	transform: scale(1.05);
+}
+
+/* Click Hint */
+.landing-page .click-hint {
+	margin-top: 40px;
+	font-size: 0.85rem;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: #888;
+	opacity: 0.7;
+	animation: landing-pulse 2s infinite;
+	transition: opacity 0.5s ease;
+}
+
+@keyframes landing-pulse {
+	0%,
+	100% {
+		opacity: 0.4;
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+/* Logo Button */
+.landing-page .logo-btn {
+	position: relative;
+	cursor: pointer;
+	overflow: hidden;
+	display: inline-block;
+	transition: transform 0.5s ease, opacity 1.5s ease;
+	border-radius: 20px;
+	background: none;
+	border: none;
+	padding: 0;
+}
+
+.landing-page .logo-btn:hover {
+	transform: scale(1.02);
+}
+
+.landing-page .logo-image {
+	width: 300px;
+	max-width: 80vw;
+	display: block;
+	mix-blend-mode: multiply;
+}
+
+/* White line flow effect */
+.landing-page .logo-btn::after {
+	content: '';
+	position: absolute;
+	top: -50%;
+	left: -50%;
+	width: 200%;
+	height: 200%;
+	background: linear-gradient(
+		to right,
+		rgba(255, 255, 255, 0) 0%,
+		rgba(255, 255, 255, 0) 45%,
+		rgba(255, 255, 255, 1) 50%,
+		rgba(255, 255, 255, 0) 55%,
+		rgba(255, 255, 255, 0) 100%
+	);
+	transform: rotate(45deg) translateX(-100%);
+	pointer-events: none;
+	mix-blend-mode: screen;
+}
+
+/* Triggered on click */
+.landing-page .logo-btn.flow-anim::after {
+	animation: landing-flow-line 1.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* Zoom out transition into video */
+.landing-page .logo-btn.zoom-out {
+	transform: scale(1.5);
+	opacity: 0;
+	filter: blur(10px);
+}
+
+@keyframes landing-flow-line {
+	0% {
+		transform: rotate(45deg) translateX(-100%);
+	}
+	100% {
+		transform: rotate(45deg) translateX(100%);
+	}
+}
+
+/* Video Container */
+.landing-page .video-container {
+	z-index: 5;
+	background: #ffffff;
+	overflow: hidden;
+	transition: background-color 1.5s ease;
+}
+
+.landing-page .video-container.ended {
+	background-color: #000000;
+}
+
+.landing-page .main-video {
+	width: 100vw;
+	height: 100vh;
+	object-fit: cover;
+	transform: scale(1.1);
+	opacity: 0;
+	image-rendering: high-quality;
+	filter: blur(0px) contrast(1.08) saturate(1.15);
+	transition: opacity 1.5s ease, filter 1.5s ease;
+}
+
+.landing-page .video-container.ended:not(.hidden-layer) .main-video {
+	opacity: 0;
+	filter: blur(20px);
+}
+
+.landing-page .video-container:not(.hidden-layer) .main-video {
+	opacity: 1;
+}
+
+/* Demo Overlay */
+.landing-page .demo-overlay {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 20;
+	transition: opacity 1.5s ease,
+		transform 2.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+	transform: translateY(100vh);
+	opacity: 0;
+	pointer-events: none;
+}
+
+.landing-page .demo-overlay.active {
+	opacity: 1;
+	transform: translateY(-50%);
+	pointer-events: auto;
+}
+
+.landing-page .primary-btn {
+	padding: 1rem 2.5rem;
+	font-size: 1rem;
+	font-weight: 500;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	background: #fff;
+	color: #000;
+	border: none;
+	border-radius: 100px;
+	cursor: pointer;
+	transition: all 0.4s ease;
+	box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.landing-page .primary-btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 10px 30px rgba(255, 255, 255, 0.4);
+}

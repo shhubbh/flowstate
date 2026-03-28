@@ -26,10 +26,10 @@ export function DiffToast({ diff, visible, onDismiss }: DiffToastProps) {
 	if (!visible || !diff || diff.totalChanges === 0) return null
 
 	return (
-		<div className={`diff-toast ${fading ? 'diff-toast-fading' : ''}`}>
+		<div className={`diff-toast ${fading ? 'diff-toast-fading' : ''}`} role="alert" aria-live="polite">
 			<div className="diff-toast-header">
 				<span className="diff-toast-title">Agent changes</span>
-				<button className="diff-toast-close" onClick={onDismiss}>
+				<button className="diff-toast-close" onClick={onDismiss} aria-label="Dismiss">
 					&times;
 				</button>
 			</div>
