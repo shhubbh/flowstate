@@ -72,20 +72,20 @@ function defaultBuildMessagesFromPart(part: PromptPart): AgentMessage[] {
 /**
  * Convert AgentMessage[] to ModelMessage[] for the AI SDK
  */
-function toModelMessages(agentMessages: AgentMessage[]): ModelMessage[] {
+export function toModelMessages(agentMessages: AgentMessage[]): ModelMessage[] {
 	return agentMessages.map((tlMessage) => {
 		const content: UserContent = []
 
 		for (const contentItem of tlMessage.content) {
 			if (contentItem.type === 'image') {
 				const imageData = contentItem.image!
-				// Data URIs must be split into mimeType + base64 for the AI SDK
+				// Data URIs must be split into mediaType + base64 for the AI SDK
 				const dataUriMatch = imageData.match(/^data:([^;]+);base64,(.+)$/)
 				if (dataUriMatch) {
 					content.push({
 						type: 'image',
 						image: dataUriMatch[2],
-						mimeType: dataUriMatch[1],
+						mediaType: dataUriMatch[1],
 					})
 				} else {
 					content.push({
