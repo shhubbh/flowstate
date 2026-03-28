@@ -1,0 +1,3 @@
+# Copy this file to .dev.vars and add your API key
+# The Cloudflare Vite plugin reads this automatically for local dev
+ANTHROPIC_API_KEY=sk-ant-your-key-here
