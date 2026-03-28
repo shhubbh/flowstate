@@ -1,7 +1,5 @@
-import { Editor, hardReset } from '@tldraw/editor'
 import type { TLErrorFallbackComponent } from '@tldraw/editor'
-
-const STORAGE_PREFIX = 'tldraw-agent-app'
+import { resetLegacyTldrawState } from '../lib/resetLegacyTldrawState'
 
 export const TldrawErrorFallback: TLErrorFallbackComponent = ({ error }) => {
 	const message = error instanceof Error ? error.message : 'An unexpected error occurred'
@@ -11,15 +9,9 @@ export const TldrawErrorFallback: TLErrorFallbackComponent = ({ error }) => {
 	}
 
 	const handleResetAndReload = () => {
-		// Clear agent localStorage keys
-		try {
-			const keys = Object.keys(localStorage).filter((k) => k.startsWith(STORAGE_PREFIX))
-			keys.forEach((k) => localStorage.removeItem(k))
-		} catch {
-			// best-effort
-		}
-		// Use tldraw's built-in reset (clears IndexedDB, session storage, etc.) and reload
-		hardReset({ shouldReload: true })
+		void resetLegacyTldrawState().finally(() => {
+			window.location.reload()
+		})
 	}
 
 	return (

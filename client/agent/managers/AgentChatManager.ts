@@ -34,7 +34,7 @@ export class AgentChatManager extends BaseAgentManager {
 
 	/**
 	 * Set the chat history directly.
-	 * Primarily used for loading persisted state.
+	 * Primarily used when hydrating serialized agent state.
 	 * @param history - The chat history items to set.
 	 */
 	setHistory(history: ChatHistoryItem[]) {

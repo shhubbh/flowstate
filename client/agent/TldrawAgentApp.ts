@@ -1,12 +1,11 @@
 import { Editor } from 'tldraw'
 import { AgentAppAgentsManager } from './managers/AgentAppAgentsManager'
-import { AgentAppPersistenceManager } from './managers/AgentAppPersistenceManager'
 
 /**
  * The TldrawAgentApp class manages the agent system for a given editor instance.
  *
  * This is a coordinator class that handles app-level concerns shared across agents,
- * such as agent lifecycle management, persistence, and global settings.
+ * such as agent lifecycle management and global settings.
  *
  * Individual agents (TldrawAgent) handle their own concerns like chat, context, and requests.
  * The app manages the agents and coordinates shared state.
@@ -23,11 +22,6 @@ export class TldrawAgentApp {
 	 * Manager for agent lifecycle - creation, disposal, and tracking.
 	 */
 	agents: AgentAppAgentsManager
-
-	/**
-	 * Manager for state persistence - loading, saving, and auto-save.
-	 */
-	persistence: AgentAppPersistenceManager
 
 	/**
 	 * Handle crash and dispose events.
@@ -60,7 +54,6 @@ export class TldrawAgentApp {
 	) {
 		this._editor = editor
 		this.agents = new AgentAppAgentsManager(this)
-		this.persistence = new AgentAppPersistenceManager(this)
 		editor.on('crash', this.handleCrash)
 		editor.on('dispose', this.handleDispose)
 	}
@@ -72,7 +65,6 @@ export class TldrawAgentApp {
 		if (!this._editor) return
 		this._editor.off('crash', this.handleCrash)
 		this._editor.off('dispose', this.handleDispose)
-		try { this.persistence.dispose() } catch { /* disposal must not cascade */ }
 		try { this.agents.dispose() } catch { /* disposal must not cascade */ }
 		this._editor = null
 	}
@@ -82,6 +74,5 @@ export class TldrawAgentApp {
 	 */
 	reset() {
 		this.agents.reset()
-		this.persistence.reset()
 	}
 }

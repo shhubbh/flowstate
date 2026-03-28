@@ -1,12 +1,20 @@
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { TldrawErrorFallback } from '../client/components/TldrawErrorFallback'
 
-vi.mock('@tldraw/editor', () => ({
-	hardReset: vi.fn(),
+const mocks = vi.hoisted(() => ({
+	resetLegacyTldrawState: vi.fn(() => Promise.resolve()),
+}))
+
+vi.mock('../client/lib/resetLegacyTldrawState', () => ({
+	resetLegacyTldrawState: mocks.resetLegacyTldrawState,
 }))
 
 describe('TldrawErrorFallback', () => {
+	afterEach(() => {
+		vi.clearAllMocks()
+	})
+
 	it('renders error message and both buttons', () => {
 		render(<TldrawErrorFallback error={new Error('Test crash')} />)
 
@@ -30,5 +38,15 @@ describe('TldrawErrorFallback', () => {
 		expect(buttons).toHaveLength(2)
 		expect(buttons[0]).toHaveTextContent('Reload')
 		expect(buttons[1]).toHaveTextContent('Reset & Reload')
+	})
+
+	it('uses the shared legacy reset utility before reloading', () => {
+		mocks.resetLegacyTldrawState.mockImplementationOnce(() => new Promise(() => {}))
+
+		render(<TldrawErrorFallback error={new Error('crash')} />)
+
+		fireEvent.click(screen.getByRole('button', { name: /reset & reload/i }))
+
+		expect(mocks.resetLegacyTldrawState).toHaveBeenCalledTimes(1)
 	})
 })

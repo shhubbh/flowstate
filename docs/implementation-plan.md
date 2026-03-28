@@ -257,7 +257,7 @@ At any point: [UNDO] reverts last handoff (phase 2)
 | Multi-agent architecture (chat + structure) | V1 design, deferred to post-hackathon Phase 2 |
 | Version timeline with rollback | Single undo is enough to validate cheap backtracking |
 | Background agent work between sessions | Requires multi-agent and cloud persistence |
-| Cloud persistence (Supabase etc.) | localStorage sufficient for prototype |
+| Cloud persistence (Supabase etc.) | Deferred. Prototype intentionally starts fresh each visit for stability |
 | Mobile / responsive | Desktop-only, acceptable for founder persona |
 | Voice input | Adds complexity without testing core bet |
 | Negative knowledge zone (graveyard) | Deferred to TODOS.md (P2) |
@@ -280,8 +280,7 @@ At any point: [UNDO] reverts last handoff (phase 2)
 
 ## Dream State Delta
 
-The hackathon prototype validates **3 of 8** required properties from the design brief:
-- P1 (spatial persistence) — canvas persists via localStorage
+The hackathon prototype validates **2 of 8** required properties from the design brief:
 - P4 (shared reference) — both user and agent manipulate same canvas
 - P7 (externalized structure) — the canvas IS the visible structure
 
@@ -291,10 +290,11 @@ Partially validates:
 - P6 (multi-modal input) — gesture + text, but no voice/sketch/import
 
 Does not validate:
+- P1 (spatial persistence) — local browser persistence is intentionally disabled; each visit starts fresh
 - P5 (non-blocking parallelism) — handoff is blocking
 - P8 (graduated initiative) — not designed yet
 
-**Distance to 12-month ideal:** ~30% of the way. But the 30% tests the part that matters most: does the paradigm feel right?
+**Distance to 12-month ideal:** ~25% of the way. But that 25% still tests the part that matters most: does the paradigm feel right?
 
 ## Error & Rescue Registry
 

@@ -27,8 +27,7 @@ import { AgentTodoManager } from './managers/AgentTodoManager'
 import { AgentUserActionTracker } from './managers/AgentUserActionTracker'
 
 /**
- * The persisted state of an agent.
- * Used for saving and loading agent state.
+ * A serializable snapshot of agent state.
  */
 export interface PersistedAgentState {
 	chatHistory?: ChatHistoryItem[]
@@ -156,8 +155,7 @@ export class TldrawAgent {
 	// ==================== State Persistence ====================
 
 	/**
-	 * Serialize the agent's state to a plain object for persistence.
-	 * This is called by the app-level persistence manager to save agent state.
+	 * Serialize the agent's state to a plain object.
 	 */
 	serializeState(): PersistedAgentState {
 		return {
@@ -171,10 +169,9 @@ export class TldrawAgent {
 	}
 
 	/**
-	 * Load previously persisted state into the agent.
-	 * This is called by the app-level persistence manager to restore agent state.
+	 * Load a previously serialized state snapshot into the agent.
 	 *
-	 * @param state - The persisted state to load.
+	 * @param state - The serialized state to load.
 	 */
 	loadState(state: PersistedAgentState) {
 		if (state.chatHistory) {

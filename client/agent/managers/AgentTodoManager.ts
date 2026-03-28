@@ -41,7 +41,7 @@ export class AgentTodoManager extends BaseAgentManager {
 
 	/**
 	 * Set the todo list directly.
-	 * Primarily used for loading persisted state.
+	 * Primarily used when hydrating serialized agent state.
 	 * @param todos - The todo items to set.
 	 */
 	setTodos(todos: TodoItem[]) {
