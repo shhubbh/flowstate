@@ -8,6 +8,9 @@ export interface AgentModelDefinition {
 
 	// Overrides the default thinking behavior for that provider
 	thinking?: boolean
+
+	// Whether the model supports assistant message prefill (default: true for anthropic)
+	prefill?: boolean
 }
 
 export const AGENT_MODEL_DEFINITIONS = {
@@ -16,6 +19,7 @@ export const AGENT_MODEL_DEFINITIONS = {
 		name: 'claude-sonnet-4-6',
 		id: 'claude-sonnet-4-6',
 		provider: 'anthropic',
+		prefill: false,
 	},
 
 	'claude-sonnet-4-5': {
