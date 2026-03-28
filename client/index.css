@@ -1,6 +1,39 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import url('tldraw/tldraw.css');
 
+:root {
+	/* Light mode (default) */
+	--tm-canvas: #f8f7f4;
+	--tm-surface: #ffffff;
+	--tm-surface-hover: #f0ece6;
+	--tm-border-light: #e4e0da;
+	--tm-border: #d4d0ca;
+	--tm-border-medium: #b8b4ae;
+	--tm-text-primary: #3a3a3a;
+	--tm-text-secondary: #6b6660;
+	--tm-text-tertiary: #8b8580;
+	--tm-text-disabled: #b8b4ae;
+	--tm-btn-primary: #2c2c2c;
+	--tm-btn-primary-hover: #404040;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--tm-canvas: #1E1D1B;
+		--tm-surface: #2A2826;
+		--tm-surface-hover: #3A3836;
+		--tm-border-light: #4A4744;
+		--tm-border: #5A5754;
+		--tm-border-medium: #6A6764;
+		--tm-text-primary: #E8E5E0;
+		--tm-text-secondary: #A8A4A0;
+		--tm-text-tertiary: #7A7672;
+		--tm-text-disabled: #5A5754;
+		--tm-btn-primary: #E8E5E0;
+		--tm-btn-primary-hover: #D4D0CA;
+	}
+}
+
 * {
 	box-sizing: border-box;
 	overscroll-behavior: none;
@@ -304,12 +337,12 @@ body {
 
 .chat-panel.tl-theme__light {
 	--tl-color-text-2: hsl(0, 0%, 55%);
-	--tl-color-primary-hover: hsl(214, 84%, 58%);
+	--tl-color-primary-hover: #404040;
 }
 
 .chat-panel.tl-theme__dark {
 	--tl-color-text-2: hsl(0, 0%, 55%);
-	--tl-color-primary-hover: hsl(214, 84%, 50%);
+	--tl-color-primary-hover: #3a3a3a;
 }
 
 .chat-panel {
@@ -926,7 +959,7 @@ button.prompt-tag span {
 }
 
 .chat-fallback button {
-	background-color: hsl(214, 84%, 50%);
+	background-color: #2c2c2c;
 	color: white;
 	border: none;
 	border-radius: 4px;
@@ -936,7 +969,7 @@ button.prompt-tag span {
 }
 
 .chat-fallback button:hover {
-	background-color: hsl(214, 84%, 40%);
+	background-color: #404040;
 }
 
 /* Context Highlights */
@@ -1059,7 +1092,7 @@ button.prompt-tag span {
 }
 
 .todo-item-done .todo-item-icon {
-	color: rgb(76, 200, 94);
+	color: #6b6660;
 }
 
 .todo-item-done .todo-item-text {
@@ -1093,4 +1126,132 @@ button.prompt-tag span {
 
 .agent-action-type-message {
 	color: var(--tl-color-text-1);
+}
+
+/* Empty Canvas Prompt */
+.empty-canvas-prompt {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	text-align: center;
+	pointer-events: none;
+	z-index: 1;
+	opacity: 0.6;
+}
+
+.empty-canvas-prompt h2 {
+	font-family: 'Inter', sans-serif;
+	font-size: 16px;
+	font-weight: 500;
+	color: #6b6660;
+	margin: 0 0 8px 0;
+}
+
+.empty-canvas-prompt p {
+	font-family: 'Inter', sans-serif;
+	font-size: 13px;
+	color: #8b8580;
+	margin: 0;
+}
+
+/* Subtle pulsing cursor after the heading */
+.empty-canvas-prompt h2::after {
+	content: '|';
+	animation: cursor-pulse 1.5s infinite;
+	margin-left: 2px;
+	font-weight: 400;
+}
+
+@keyframes cursor-pulse {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0; }
+}
+
+/* DRY: shared toast base (eng review) — diff-toast already uses these values */
+.toast-base {
+	position: fixed;
+	right: 16px;
+	background: #ffffff;
+	border: 1px solid #d4d0ca;
+	border-radius: 8px;
+	padding: 12px 16px;
+	box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+	max-width: 320px;
+}
+
+.diff-toast { /* extends .toast-base */ z-index: 1001; bottom: 64px; }
+.error-toast { /* extends .toast-base */ z-index: 1002; bottom: 64px; }
+/* When both visible: error toast shifts up: bottom: calc(64px + diffToastHeight + 8px) */
+
+.error-toast-title {
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	color: #D4453A;
+	margin-bottom: 4px;
+}
+
+.error-toast-message {
+	font-size: 13px;
+	color: #3a3a3a;
+	line-height: 1.4;
+}
+
+/* Agent scanning highlight — GPU-composited via opacity (eng review perf fix) */
+.agent-scanning {
+	position: relative;
+}
+.agent-scanning::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	background: radial-gradient(ellipse at center, rgba(248, 247, 244, 0.15) 0%, transparent 70%);
+	opacity: 0;
+	animation: agent-scan 3s ease-in-out infinite;
+	pointer-events: none;
+}
+@keyframes agent-scan {
+	0% { opacity: 0; }
+	50% { opacity: 1; }
+	100% { opacity: 0; }
+}
+
+/* Ghost outline — cluster about to be placed */
+@keyframes ghost-solidify {
+	0% { opacity: 0; border-style: dashed; }
+	60% { opacity: 0.4; border-style: dashed; }
+	100% { opacity: 1; border-style: dashed; }
+}
+
+.agent-ghost-outline {
+	animation: ghost-solidify 500ms ease-out forwards;
+}
+
+/* Node analysis glow — GPU-composited via opacity (eng review perf fix) */
+.agent-reading {
+	position: relative;
+}
+.agent-reading::after {
+	content: '';
+	position: absolute;
+	inset: -4px;
+	border-radius: inherit;
+	background: radial-gradient(ellipse at center, rgba(248, 247, 244, 0.12) 0%, transparent 70%);
+	opacity: 0;
+	animation: node-glow 850ms ease-in-out;
+	pointer-events: none;
+}
+@keyframes node-glow {
+	0% { opacity: 0; }
+	15% { opacity: 1; }
+	75% { opacity: 1; }
+	100% { opacity: 0; }
+}
+
+/* CSS cascade: agent thinking state applied to canvas container */
+.agent-thinking .cluster-shape {
+	animation: agent-scan 3s ease-in-out infinite;
 }
