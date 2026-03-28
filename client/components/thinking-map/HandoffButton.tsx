@@ -15,9 +15,28 @@ export function HandoffButton({ undoManager, onHandoffComplete }: HandoffButtonP
 	const editor = useTldrawAgentApp().editor
 	const [isThinking, setIsThinking] = useState(false)
 	const beforeShapesRef = useRef<Map<TLShapeId, TLShape>>(new Map())
+	const staggerTimeoutIds = useRef<number[]>([])
 
 	const shapeCount = useValue('shapeCount', () => editor.getCurrentPageShapes().length, [editor])
 	const isGenerating = useValue('isGenerating', () => agent.requests.isGenerating(), [agent])
+
+	// Clean up ghost presence classes and stagger timeouts
+	const cleanupGhostPresence = useCallback(() => {
+		// Clear all stagger timeouts
+		staggerTimeoutIds.current.forEach((id) => clearTimeout(id))
+		staggerTimeoutIds.current = []
+
+		// Remove ghost classes from canvas container
+		const container = editor.getContainer()
+		if (container) {
+			container.classList.remove('agent-thinking')
+		}
+
+		// Remove .agent-reading from all nodes
+		document.querySelectorAll('.agent-reading').forEach((el) => {
+			el.classList.remove('agent-reading')
+		})
+	}, [editor])
 
 	// Detect agent completion for diff computation + thinking state reset
 	const prevIsGenerating = useRef(false)
@@ -27,10 +46,19 @@ export function HandoffButton({ undoManager, onHandoffComplete }: HandoffButtonP
 			const afterShapes = editor.getCurrentPageShapes()
 			const diff = computeHandoffDiff(beforeShapesRef.current, afterShapes)
 			onHandoffComplete?.(diff)
+			cleanupGhostPresence()
 			setIsThinking(false)
 		}
 		prevIsGenerating.current = isGenerating
-	}, [isGenerating, editor, onHandoffComplete])
+	}, [isGenerating, editor, onHandoffComplete, cleanupGhostPresence])
+
+	// Cleanup on unmount
+	useEffect(() => {
+		return () => {
+			staggerTimeoutIds.current.forEach((id) => clearTimeout(id))
+			staggerTimeoutIds.current = []
+		}
+	}, [])
 
 	const handleHandoff = useCallback(async () => {
 		if (shapeCount === 0 || isThinking) return
@@ -53,6 +81,25 @@ export function HandoffButton({ undoManager, onHandoffComplete }: HandoffButtonP
 		)
 
 		setIsThinking(true)
+
+		// Ghost presence: add .agent-thinking to canvas container
+		const container = editor.getContainer()
+		if (container) {
+			container.classList.add('agent-thinking')
+		}
+
+		// Stagger .agent-reading on thought nodes after 300ms delay
+		const delayId = window.setTimeout(() => {
+			const nodes = document.querySelectorAll('.thought-node')
+			nodes.forEach((node, i) => {
+				const id = window.setTimeout(() => {
+					node.classList.add('agent-reading')
+				}, i * 200)
+				staggerTimeoutIds.current.push(id)
+			})
+		}, 300)
+		staggerTimeoutIds.current.push(delayId)
+
 		try {
 			agent.interrupt({
 				input: {
@@ -65,9 +112,10 @@ export function HandoffButton({ undoManager, onHandoffComplete }: HandoffButtonP
 		} catch (err) {
 			console.error('Handoff failed:', err)
 			alert('Handoff failed. Please try again.')
+			cleanupGhostPresence()
 			setIsThinking(false)
 		}
-	}, [agent, editor, shapeCount, isThinking, undoManager])
+	}, [agent, editor, shapeCount, isThinking, undoManager, cleanupGhostPresence])
 
 	const isDisabled = shapeCount === 0 || isThinking
 

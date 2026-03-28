@@ -5,6 +5,7 @@ import type { HandoffDiffSummary } from '../../lib/diff-utils'
 import { UndoManager } from '../../lib/undo-manager'
 import { DemoLoader } from './DemoLoader'
 import { DiffToast } from './DiffToast'
+import { EmptyCanvasPrompt } from './EmptyCanvasPrompt'
 import { HandoffButton } from './HandoffButton'
 import { TextChannel } from './TextChannel'
 import { UndoButton } from './UndoButton'
@@ -32,6 +33,7 @@ export function BottomBar() {
 
 	return (
 		<>
+			<EmptyCanvasPrompt shapeCount={shapeCount} />
 			<DiffToast diff={lastDiff} visible={diffVisible} onDismiss={handleDismissDiff} />
 			<div className="bottom-bar">
 				<DemoLoader />
