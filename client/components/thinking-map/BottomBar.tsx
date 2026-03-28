@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from 'react'
 import { useValue } from 'tldraw'
-import { useTldrawAgentApp } from '../../agent/TldrawAgentAppProvider'
+import { useAgent, useTldrawAgentApp } from '../../agent/TldrawAgentAppProvider'
 import type { HandoffDiffSummary } from '../../lib/diff-utils'
 import { UndoManager } from '../../lib/undo-manager'
 import { DemoLoader } from './DemoLoader'
@@ -12,7 +12,9 @@ import { UndoButton } from './UndoButton'
 
 export function BottomBar() {
 	const editor = useTldrawAgentApp().editor
+	const agent = useAgent()
 	const shapeCount = useValue('shapeCount', () => editor.getCurrentPageShapes().length, [editor])
+	const isGenerating = useValue('isGenerating', () => agent.requests.isGenerating(), [agent])
 	const undoManagerRef = useRef(new UndoManager())
 
 	const [lastDiff, setLastDiff] = useState<HandoffDiffSummary | null>(null)
@@ -36,8 +38,8 @@ export function BottomBar() {
 			<EmptyCanvasPrompt shapeCount={shapeCount} />
 			<DiffToast diff={lastDiff} visible={diffVisible} onDismiss={handleDismissDiff} />
 			<div className="bottom-bar">
-				<DemoLoader />
-				<TextChannel />
+				<DemoLoader disabled={isGenerating} />
+				<TextChannel disabled={isGenerating} />
 				<span className="node-count">
 					{shapeCount} node{shapeCount !== 1 ? 's' : ''}
 				</span>

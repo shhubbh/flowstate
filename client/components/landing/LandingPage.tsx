@@ -32,6 +32,13 @@ export function LandingPage({ onComplete, exiting }: LandingPageProps) {
 		return id
 	}, [])
 
+	const skipToDemo = useCallback(() => {
+		setPhase('ending')
+		schedule(() => {
+			setPhase('cta')
+		}, 1500)
+	}, [schedule])
+
 	const handleLogoClick = useCallback(() => {
 		if (isTransitioning.current) return
 		isTransitioning.current = true
@@ -50,11 +57,25 @@ export function LandingPage({ onComplete, exiting }: LandingPageProps) {
 				setPhase('video')
 				if (videoRef.current) {
 					videoRef.current.currentTime = 0
-					videoRef.current.play().catch((e) => console.log('Video play blocked', e))
+					videoRef.current.play().catch(() => {
+						// Video play blocked (autoplay policy, network error, etc.)
+						// Skip directly to CTA so the user isn't stuck
+						skipToDemo()
+					})
 				}
+
+				// Fallback: if video hasn't ended after 20s, skip to CTA
+				schedule(() => {
+					setPhase((current) => {
+						if (current === 'video') {
+							skipToDemo()
+						}
+						return current
+					})
+				}, 20000)
 			}, 1000)
 		}, 1500)
-	}, [schedule])
+	}, [schedule, skipToDemo])
 
 	const handleVideoEnded = useCallback(() => {
 		setPhase('ending')

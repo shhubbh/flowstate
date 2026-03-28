@@ -112,6 +112,7 @@ export function HandoffButton({ undoManager, onHandoffComplete }: HandoffButtonP
 		} catch (err) {
 			console.error('Handoff failed:', err)
 			alert('Handoff failed. Please try again.')
+			beforeShapesRef.current = new Map()
 			cleanupGhostPresence()
 			setIsThinking(false)
 		}

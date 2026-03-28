@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Box, createShapeId, useEditor } from 'tldraw'
+import { Box, createShapeId, useEditor, useToasts } from 'tldraw'
 
 const MAX_NODES_PER_PASTE = 30
 const COLUMN_COUNT = 3
@@ -9,6 +9,7 @@ const PASTE_OFFSET = 40
 
 export function usePasteHandler() {
 	const editor = useEditor()
+	const toasts = useToasts()
 
 	useEffect(() => {
 		function handlePaste(e: ClipboardEvent) {
@@ -33,9 +34,9 @@ export function usePasteHandler() {
 			if (lines.length === 0) return
 
 			if (lines.length > MAX_NODES_PER_PASTE) {
-				console.warn(
-					`Paste contained ${lines.length} lines. Capping at ${MAX_NODES_PER_PASTE} nodes.`
-				)
+				toasts.addToast({
+					title: `Pasted ${MAX_NODES_PER_PASTE} of ${lines.length} lines (max ${MAX_NODES_PER_PASTE})`,
+				})
 			}
 
 			const linesToCreate = lines.slice(0, MAX_NODES_PER_PASTE)
@@ -91,5 +92,5 @@ export function usePasteHandler() {
 		return () => {
 			document.removeEventListener('paste', handlePaste)
 		}
-	}, [editor])
+	}, [editor, toasts])
 }

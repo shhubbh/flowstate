@@ -2,7 +2,7 @@ import { createShapeId } from 'tldraw'
 import { useTldrawAgentApp } from '../../agent/TldrawAgentAppProvider'
 import { DEMO_SCENARIO } from '../../data/demo-scenario'
 
-export function DemoLoader() {
+export function DemoLoader({ disabled }: { disabled?: boolean }) {
 	const editor = useTldrawAgentApp().editor
 
 	const handleLoad = () => {
@@ -28,7 +28,7 @@ export function DemoLoader() {
 	}
 
 	return (
-		<button className="demo-btn" onClick={handleLoad} title="Load demo scenario">
+		<button className="demo-btn" onClick={handleLoad} disabled={disabled} title={disabled ? 'Wait for agent to finish' : 'Load demo scenario'}>
 			Load Demo
 		</button>
 	)

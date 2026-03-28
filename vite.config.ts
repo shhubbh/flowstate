@@ -10,5 +10,11 @@ export default defineConfig(() => {
 			zodLocalePlugin(fileURLToPath(new URL('./scripts/zod-locales-shim.js', import.meta.url))),
 			react(),
 		],
+		test: {
+			environment: 'jsdom',
+			globals: true,
+			setupFiles: ['./test/setup.ts'],
+			exclude: ['**/node_modules/**', '**/.claude/**'],
+		},
 	}
 })
