@@ -1,24 +1,24 @@
 import { BaseBoxShapeUtil, HTMLContainer, T, TLBaseShape } from 'tldraw'
 
-// --- Annotation type variants ---
+// --- Annotation type variants (dark mode) ---
 
 const ANNOTATION_STYLES = {
 	question: {
-		bg: '#f0ebe4',
-		color: '#8b7e6e',
-		border: '#d4cfc6',
+		bg: '#2A2620',
+		color: '#9A8E7E',
+		border: '#5A5444',
 		icon: '?',
 	},
 	tension: {
-		bg: '#fef2f0',
-		color: '#c4553a',
-		border: '#e8c4bc',
+		bg: '#2E2220',
+		color: '#B85A4A',
+		border: '#5A3830',
 		icon: '!',
 	},
 	insight: {
-		bg: '#eef6f0',
-		color: '#3d7a53',
-		border: '#b8d4c2',
+		bg: '#1E2A22',
+		color: '#5A9A6A',
+		border: '#3A5A42',
 		icon: '\u25CF', // bullet character
 	},
 } as const
@@ -78,7 +78,7 @@ export class AgentAnnotationShapeUtil extends BaseBoxShapeUtil<AgentAnnotationSh
 		return (
 			<HTMLContainer>
 				<div
-					className="agent-annotation-badge"
+					className={`agent-annotation-badge agent-annotation-${shape.props.annotationType}`}
 					style={{
 						width: 24,
 						height: 24,
@@ -107,18 +107,14 @@ export class AgentAnnotationShapeUtil extends BaseBoxShapeUtil<AgentAnnotationSh
 								bottom: 'calc(100% + 6px)',
 								left: '50%',
 								transform: 'translateX(-50%)',
-								background: '#ffffff',
-								border: '1px solid #d4d0ca',
 								borderRadius: 6,
 								padding: '6px 10px',
 								fontSize: 12,
 								lineHeight: 1.4,
-								color: '#3a3a3a',
 								whiteSpace: 'nowrap',
 								maxWidth: 220,
 								overflow: 'hidden',
 								textOverflow: 'ellipsis',
-								boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
 								pointerEvents: 'none',
 								opacity: 0,
 								transition: 'opacity 0.15s ease',

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useValue } from 'tldraw'
 import { useAgent, useTldrawAgentApp } from '../../agent/TldrawAgentAppProvider'
+import { clearTensionHeartbeats } from '../../lib/tension-heartbeat'
 import type { UndoManager } from '../../lib/undo-manager'
 
 interface UndoButtonProps {
@@ -18,6 +19,7 @@ export function UndoButton({ undoManager }: UndoButtonProps) {
 
 	const handleUndo = () => {
 		if (isDisabled) return
+		clearTensionHeartbeats()
 		undoManager.restore(editor)
 		forceUpdate((n) => n + 1)
 	}

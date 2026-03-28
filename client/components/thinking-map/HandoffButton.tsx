@@ -1,16 +1,19 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { TLShape, TLShapeId, useValue } from 'tldraw'
 import { useAgent, useTldrawAgentApp } from '../../agent/TldrawAgentAppProvider'
+import type { AgentPersona } from '../../data/agent-personas'
 import { computeHandoffDiff, HandoffDiffSummary } from '../../lib/diff-utils'
+import { applyTensionHeartbeats, clearTensionHeartbeats } from '../../lib/tension-heartbeat'
 import type { UndoManager } from '../../lib/undo-manager'
 import { buildHandoffPrompt } from '../../prompts/system-prompt'
 
 interface HandoffButtonProps {
 	undoManager: UndoManager
 	onHandoffComplete?: (diff: HandoffDiffSummary) => void
+	persona?: AgentPersona
 }
 
-export function HandoffButton({ undoManager, onHandoffComplete }: HandoffButtonProps) {
+export function HandoffButton({ undoManager, onHandoffComplete, persona }: HandoffButtonProps) {
 	const agent = useAgent()
 	const editor = useTldrawAgentApp().editor
 	const [isThinking, setIsThinking] = useState(false)
@@ -22,6 +25,9 @@ export function HandoffButton({ undoManager, onHandoffComplete }: HandoffButtonP
 
 	// Clean up ghost presence classes and stagger timeouts
 	const cleanupGhostPresence = useCallback(() => {
+		// Clear tension heartbeats
+		clearTensionHeartbeats()
+
 		// Clear all stagger timeouts
 		staggerTimeoutIds.current.forEach((id) => clearTimeout(id))
 		staggerTimeoutIds.current = []
@@ -48,6 +54,8 @@ export function HandoffButton({ undoManager, onHandoffComplete }: HandoffButtonP
 			onHandoffComplete?.(diff)
 			cleanupGhostPresence()
 			setIsThinking(false)
+			// Apply tension heartbeats after agent finishes
+			requestAnimationFrame(() => applyTensionHeartbeats(editor))
 		}
 		prevIsGenerating.current = isGenerating
 	}, [isGenerating, editor, onHandoffComplete, cleanupGhostPresence])
@@ -103,7 +111,7 @@ export function HandoffButton({ undoManager, onHandoffComplete }: HandoffButtonP
 		try {
 			agent.interrupt({
 				input: {
-					agentMessages: [buildHandoffPrompt()],
+					agentMessages: [buildHandoffPrompt(persona?.promptSuffix)],
 					bounds: editor.getViewportPageBounds(),
 					source: 'user',
 					contextItems: agent.context.getItems(),

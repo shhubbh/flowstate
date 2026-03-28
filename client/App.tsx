@@ -13,6 +13,7 @@ import {
 	TldrawAgentAppProvider,
 } from './agent/TldrawAgentAppProvider'
 import { BottomBar } from './components/thinking-map/BottomBar'
+import { GhostCursor } from './components/thinking-map/GhostCursor'
 import { CustomHelperButtons } from './components/CustomHelperButtons'
 import { AgentViewportBoundsHighlights } from './components/highlights/AgentViewportBoundsHighlights'
 import { AllContextHighlights } from './components/highlights/ContextHighlights'
@@ -80,6 +81,7 @@ function App() {
 						<TldrawAgentAppContextProvider app={app}>
 							<AgentViewportBoundsHighlights />
 							<AllContextHighlights />
+							<GhostCursor />
 						</TldrawAgentAppContextProvider>
 					)}
 				</>

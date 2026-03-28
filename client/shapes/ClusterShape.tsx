@@ -56,29 +56,26 @@ export class ClusterShapeUtil extends BaseBoxShapeUtil<ClusterShapeType> {
 		return (
 			<HTMLContainer>
 				<div
+					className="cluster-shape"
 					style={{
 						width: shape.props.w,
 						height: shape.props.h,
-						border: '1.5px dashed #b8b4ae',
 						borderRadius: 12,
-						background: 'rgba(255,255,255,0.3)',
 						boxSizing: 'border-box',
 						position: 'relative',
 						pointerEvents: 'all',
 					}}
 				>
 					<span
+						className="cluster-label"
 						style={{
 							position: 'absolute',
 							top: -10,
 							left: 16,
-							fontFamily: 'Inter, sans-serif',
-							fontSize: 11.5,
-							fontWeight: 600,
-							textTransform: 'uppercase',
-							color: '#6b6660',
-							letterSpacing: '0.03em',
-							background: '#f8f7f4',
+							fontFamily: "'Instrument Serif', serif",
+							fontSize: 13,
+							fontWeight: 400,
+							letterSpacing: '0.01em',
 							padding: '2px 10px',
 							userSelect: 'none',
 							lineHeight: '18px',
