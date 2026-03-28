@@ -1,0 +1,61 @@
+import { FormEventHandler, useCallback, useRef, useState } from 'react'
+import { useEditor } from 'tldraw'
+import { useAgent } from '../../agent/TldrawAgentAppProvider'
+
+export function TextChannel() {
+	const agent = useAgent()
+	const editor = useEditor()
+	const inputRef = useRef<HTMLInputElement>(null)
+	const [isExpanded, setIsExpanded] = useState(false)
+
+	const handleSubmit = useCallback<FormEventHandler<HTMLFormElement>>(
+		async (e) => {
+			e.preventDefault()
+			if (!inputRef.current) return
+			const value = inputRef.current.value.trim()
+			if (!value) return
+
+			inputRef.current.value = ''
+			setIsExpanded(false)
+
+			try {
+				agent.interrupt({
+					input: {
+						agentMessages: [value],
+						bounds: editor.getViewportPageBounds(),
+						source: 'user',
+						contextItems: agent.context.getItems(),
+					},
+				})
+			} catch (err) {
+				console.error('Text channel failed:', err)
+			}
+		},
+		[agent, editor]
+	)
+
+	return (
+		<div className="bottom-bar-text-channel">
+			<button
+				className="text-toggle"
+				onClick={() => setIsExpanded(!isExpanded)}
+				title="Ask the agent something"
+			>
+				&#9998;
+			</button>
+			{isExpanded && (
+				<form onSubmit={handleSubmit} style={{ flex: 1, display: 'flex' }}>
+					<input
+						ref={inputRef}
+						type="text"
+						placeholder="Ask the agent something..."
+						autoFocus
+						onBlur={() => {
+							if (!inputRef.current?.value) setIsExpanded(false)
+						}}
+					/>
+				</form>
+			)}
+		</div>
+	)
+}
