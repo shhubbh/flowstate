@@ -98,7 +98,7 @@ export const TldrawAgentAppProvider = memo(function TldrawAgentAppProvider({
 		;(window as any).editor = editor
 
 		return () => {
-			instance.dispose()
+			try { instance.dispose() } catch { /* StrictMode teardown safety */ }
 			setApp(null)
 			onUnmount?.()
 			delete (window as any).agentApp

@@ -15,6 +15,7 @@ import {
 import { BottomBar } from './components/thinking-map/BottomBar'
 import { GhostCursor } from './components/thinking-map/GhostCursor'
 import { CustomHelperButtons } from './components/CustomHelperButtons'
+import { TldrawErrorFallback } from './components/TldrawErrorFallback'
 import { AgentViewportBoundsHighlights } from './components/highlights/AgentViewportBoundsHighlights'
 import { AllContextHighlights } from './components/highlights/ContextHighlights'
 import { usePasteHandler } from './hooks/usePasteHandler'
@@ -23,6 +24,16 @@ import { ClusterShapeUtil } from './shapes/ClusterShape'
 import { ThoughtNodeShapeUtil } from './shapes/ThoughtNode'
 import { TargetAreaTool } from './tools/TargetAreaTool'
 import { TargetShapeTool } from './tools/TargetShapeTool'
+
+// Clear corrupted localStorage from prior crash cycles before React renders
+;(() => {
+	try {
+		const keys = Object.keys(localStorage).filter((k) => k.startsWith('tldraw-agent-app:'))
+		keys.forEach((k) => localStorage.removeItem(k))
+	} catch {
+		// best-effort
+	}
+})()
 
 // Customize tldraw's styles to play to the agent's strengths
 DefaultSizeStyle.setDefaultValue('s')
@@ -68,6 +79,7 @@ function App() {
 	// Custom components to visualize what the agent is doing
 	const components: TLComponents = useMemo(() => {
 		return {
+			ErrorFallback: TldrawErrorFallback,
 			HelperButtons: () =>
 				app && (
 					<TldrawAgentAppContextProvider app={app}>
@@ -94,7 +106,7 @@ function App() {
 			<div className="tldraw-agent-container">
 				<div className="tldraw-canvas">
 					<Tldraw
-						persistenceKey="thinking-map"
+						persistenceKey="thinking-map-v2"
 						tools={tools}
 						overrides={overrides}
 						components={components}
