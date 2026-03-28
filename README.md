@@ -19,7 +19,7 @@ npm install
 npm run dev
 ```
 
-Open `localhost:5173`. Paste some text (messy strategic fragments). Move nodes around. Hit **Handoff**.
+Open `localhost:5173`. You'll see a cinematic landing page — click the logo, watch the flow video, then hit **DEMO** to enter the canvas. Paste some text (messy strategic fragments). Move nodes around. Hit **Handoff**.
 
 ## Architecture
 
@@ -27,13 +27,16 @@ Built on the [tldraw Agent Starter Kit](https://tldraw.dev/starter-kits/agent).
 
 ```
 client/              → React frontend
+  components/
+    landing/         → Cinematic landing page (logo → video → demo CTA)
+    thinking-map/    → UI components (BottomBar, HandoffButton, TextChannel, DiffToast, UndoButton, DemoLoader)
   shapes/            → Custom tldraw shapes (ThoughtNode, Cluster, AgentAnnotation)
-  components/        → UI components (BottomBar, HandoffButton, TextChannel, DiffToast, UndoButton, DemoLoader)
   prompts/           → AI system prompt for structural reasoning
   hooks/             → Paste handler
   agent/             → tldraw agent integration (from starter kit)
   lib/               → Utilities (undo-manager, diff-utils)
   data/              → Demo scenario data
+public/landing/      → Landing page media assets (logo, video)
 worker/              → Cloudflare Worker backend (AI provider proxy)
 shared/              → Shared types and schemas
 docs/                → Design documents and plans
@@ -47,7 +50,7 @@ docs/                → Design documents and plans
 
 ## Design: Architect's Desk
 
-Warm canvas (#f8f7f4), dotted grid, hairline-bordered white cards, muted annotation colors, JetBrains Mono for metadata. See [.context/designs/approved.json](.context/designs/) for full token spec.
+Warm canvas (#f8f7f4), dotted grid, hairline-bordered white cards, muted annotation colors, JetBrains Mono for metadata. See [DESIGN.md](DESIGN.md) for the full design system.
 
 ## Docs
 
@@ -67,6 +70,10 @@ Warm canvas (#f8f7f4), dotted grid, hairline-bordered white cards, muted annotat
 - **Tension Visualization**: Red dashed arrows with pulse animation for conflicts; paired with tension annotation badges
 - **Animation Polish**: Fade-in animation for newly created thought nodes
 
+## Landing Page
+
+Cinematic entry experience: logo with flow-line animation → full-screen brand video → DEMO button that transitions into the canvas app. The landing page uses its own white/black aesthetic (intentionally distinct from the warm Architect's Desk design system). Media assets live in `public/landing/`.
+
 ## Status
 
-Phase 1 (core loop) and Phase 2 (cherry-picks) built.
+Phase 1 (core loop) and Phase 2 (cherry-picks) built. Landing page integrated.

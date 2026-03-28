@@ -50,6 +50,11 @@ body {
 	display: grid;
 	grid-template-columns: 1fr;
 	grid-template-rows: 1fr 52px;
+	transition: opacity 0.6s ease-out;
+}
+
+.tldraw-agent-container.entering {
+	opacity: 0;
 }
 
 .tldraw-canvas {
