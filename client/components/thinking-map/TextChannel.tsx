@@ -1,10 +1,9 @@
 import { FormEventHandler, useCallback, useRef, useState } from 'react'
-import { useEditor } from 'tldraw'
-import { useAgent } from '../../agent/TldrawAgentAppProvider'
+import { useAgent, useTldrawAgentApp } from '../../agent/TldrawAgentAppProvider'
 
 export function TextChannel() {
 	const agent = useAgent()
-	const editor = useEditor()
+	const editor = useTldrawAgentApp().editor
 	const inputRef = useRef<HTMLInputElement>(null)
 	const [isExpanded, setIsExpanded] = useState(false)
 
@@ -38,6 +37,7 @@ export function TextChannel() {
 		<div className="bottom-bar-text-channel">
 			<button
 				className="text-toggle"
+				onMouseDown={(e) => e.preventDefault()}
 				onClick={() => setIsExpanded(!isExpanded)}
 				title="Ask the agent something"
 			>

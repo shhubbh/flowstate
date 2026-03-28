@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useEditor, useValue } from 'tldraw'
-import { useAgent } from '../../agent/TldrawAgentAppProvider'
+import { useValue } from 'tldraw'
+import { useAgent, useTldrawAgentApp } from '../../agent/TldrawAgentAppProvider'
 import type { UndoManager } from '../../lib/undo-manager'
 
 interface UndoButtonProps {
@@ -8,7 +8,7 @@ interface UndoButtonProps {
 }
 
 export function UndoButton({ undoManager }: UndoButtonProps) {
-	const editor = useEditor()
+	const editor = useTldrawAgentApp().editor
 	const agent = useAgent()
 	const isGenerating = useValue('isGenerating', () => agent.requests.isGenerating(), [agent])
 	const [, forceUpdate] = useState(0)
