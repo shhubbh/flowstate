@@ -7,15 +7,18 @@
 - **Project type:** Canvas web app (tldraw-based)
 
 ## Aesthetic Direction
-- **Direction:** Architect's Desk (warm minimalism)
-- **Decoration level:** Intentional (subtle warmth — off-white canvas, dotted grid, translucent cluster fills, dashed borders)
-- **Mood:** Calm, focused, professional. Like working at a well-lit drafting table. Content is the interface — everything else recedes.
+- **Direction:** Dark Observatory (warm minimalism on dark canvas)
+- **Default theme:** Dark
+- **Decoration level:** Intentional (subtle warmth — dark canvas, glass-morphism nodes, grain texture, glowing annotations)
+- **Mood:** Calm, focused, premium. Like a thinking observatory at night. Semantic colors glow against the dark surface. Content floats as glass objects.
 - **Design risks:**
   - COLOR = MEANING: All UI chrome is warm grayscale. Color only appears for semantic annotations and system states. When you see color, the agent flagged something.
   - AGENT GHOST PRESENCE: During handoff, the agent has subtle visual presence — scanning highlights, ghost outlines that solidify.
 
 ## Typography
-- **Display/Hero:** Instrument Serif — architectural, precise, premium (future marketing/landing use)
+- **Display/Hero:** Instrument Serif — architectural, precise, premium
+  - Cluster labels: 13px / weight 400
+  - Empty canvas heading: 22px / weight 400
 - **Body:** Inter — clean, neutral, invisible. Lets wildly varying content breathe.
 - **UI/Labels:** Inter
 - **Data/Tables:** JetBrains Mono (tabular-nums supported)
@@ -33,12 +36,12 @@
 
 **Principle: Color only has meaning.** All chrome is warm grayscale. Color is reserved for semantic signals.
 
-### Surfaces (warm grayscale)
-- Canvas: `#f8f7f4`
-- Card/Node fill: `#ffffff`
-- Cluster fill: `rgba(255,255,255,0.3)`
-- Input bg: `#faf9f6`
-- Hover bg: `#f0ece6`
+### Surfaces (dark default)
+- Canvas: `#1E1D1B`
+- Card/Node fill: `rgba(42, 40, 38, 0.65)` + backdrop-filter blur(12px) (glass)
+- Cluster fill: `rgba(42, 40, 38, 0.25)` + backdrop-filter blur(4px) (glass)
+- Bottom bar: `rgba(30, 29, 27, 0.85)` + backdrop-filter blur(16px) (glass)
+- Canvas grain: SVG noise texture at 3% opacity
 
 ### Borders (warm grayscale)
 - Light: `#e4e0da`
@@ -84,6 +87,10 @@
   - Question: text `#9A8E7E`, bg `#2A2620`, border `#5A5444`
 - **Dark mode semantic:**
   - Error: `#D45A4A`, Warning: `#C49A4A`, Focus: `#5B9A7A`
+- **Annotation glow (dark canvas):**
+  - Question: `drop-shadow(0 0 6px rgba(139, 126, 110, 0.4))`
+  - Tension: `drop-shadow(0 0 8px rgba(196, 85, 58, 0.5))`
+  - Insight: `drop-shadow(0 0 6px rgba(61, 122, 83, 0.4))`
 
 ## Spacing
 - **Base unit:** 4px
@@ -93,9 +100,10 @@
 ## Layout
 - **Approach:** Hybrid (freeform canvas + disciplined utility strip)
 - **Canvas:** 100% viewport, zero chrome (Muse-style)
-- **Bottom bar:** 52px fixed strip, white bg, top border
+- **Bottom bar:** 52px fixed strip, frosted glass, top border
 - **Border radius:** sm:4px, md:6px, lg:8px, xl:12px, full:9999px (annotations)
 - **Max content width:** n/a (infinite canvas)
+- **Persona selector:** Segmented pill control, 28px height, 11px Inter 500, glow active state `box-shadow: 0 0 8px rgba(232, 229, 224, 0.08)`
 
 ## Motion
 - **Approach:** Minimal-functional + agent ghost presence
@@ -142,3 +150,9 @@
 | 2026-03-28 | Agent ghost presence risk adopted | Agent gets visual presence during handoff — scanning, ghost outlines, node glow |
 | 2026-03-28 | Warm dark mode strategy | Warm dark grays instead of cool/blue-tinted, maintaining architect's desk identity |
 | 2026-03-28 | Instrument Serif for display | Reserved for future marketing/landing page use, not current app UI |
+| 2026-03-28 | Dark Observatory identity overhaul | Dark canvas by default — semantic colors glow, glass nodes float, grain texture adds physical feel |
+| 2026-03-28 | Instrument Serif deployed | Used for cluster labels (13px) and empty canvas heading (22px) |
+| 2026-03-28 | Glass-morphism nodes | Translucent nodes with backdrop-filter blur on dark canvas |
+| 2026-03-28 | Agent persona selector | Segmented pill control for Strategist / Devil's Advocate / VC Lens modes |
+| 2026-03-28 | AI Ghost cursor | Animated cursor overlay during handoff, glides across nodes |
+| 2026-03-28 | Tension heartbeat | Nodes connected by tension arrows pulse red glow, speed scales with count |

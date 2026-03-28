@@ -9,7 +9,7 @@ export function EmptyCanvasPrompt({ shapeCount }: EmptyCanvasPromptProps) {
 		<div
 			className="empty-canvas-prompt"
 			style={{
-				opacity: isVisible ? 0.6 : 0,
+				opacity: isVisible ? 1 : 0,
 				transition: 'opacity 300ms ease',
 				pointerEvents: 'none',
 			}}

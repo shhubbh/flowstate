@@ -1,6 +1,6 @@
 import { BaseBoxShapeUtil, HTMLContainer, T, TLBaseShape } from 'tldraw'
 
-// --- Annotation type variants ---
+// --- Annotation type variants (dark mode) ---
 
 const ANNOTATION_STYLES = {
 	question: {
@@ -78,7 +78,7 @@ export class AgentAnnotationShapeUtil extends BaseBoxShapeUtil<AgentAnnotationSh
 		return (
 			<HTMLContainer>
 				<div
-					className="agent-annotation-badge"
+					className={`agent-annotation-badge agent-annotation-${shape.props.annotationType}`}
 					style={{
 						width: 24,
 						height: 24,
@@ -107,18 +107,14 @@ export class AgentAnnotationShapeUtil extends BaseBoxShapeUtil<AgentAnnotationSh
 								bottom: 'calc(100% + 6px)',
 								left: '50%',
 								transform: 'translateX(-50%)',
-								background: 'var(--tm-annotation-tooltip-bg)',
-								border: '1px solid var(--tm-annotation-tooltip-border)',
 								borderRadius: 6,
 								padding: '6px 10px',
 								fontSize: 12,
 								lineHeight: 1.4,
-								color: 'var(--tm-text-primary)',
 								whiteSpace: 'nowrap',
 								maxWidth: 220,
 								overflow: 'hidden',
 								textOverflow: 'ellipsis',
-								boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
 								pointerEvents: 'none',
 								opacity: 0,
 								transition: 'opacity 0.15s ease',

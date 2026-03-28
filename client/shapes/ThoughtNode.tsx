@@ -63,14 +63,11 @@ export class ThoughtNodeShapeUtil extends BaseBoxShapeUtil<ThoughtNodeShape> {
 						height: shape.props.h,
 						maxWidth: 240,
 						minWidth: 140,
-						background: '#ffffff',
-						border: '1px solid #d4d0ca',
 						borderRadius: 6,
 						padding: '14px 16px',
 						fontFamily: 'Inter, sans-serif',
 						fontSize: 13.5,
 						lineHeight: 1.5,
-						color: '#3a3a3a',
 						boxSizing: 'border-box',
 						overflow: 'hidden',
 						cursor: 'grab',
@@ -82,10 +79,10 @@ export class ThoughtNodeShapeUtil extends BaseBoxShapeUtil<ThoughtNodeShape> {
 					className="thought-node"
 				>
 					<span
+						className="thought-node-id"
 						style={{
 							fontFamily: "'JetBrains Mono', monospace",
 							fontSize: 10,
-							color: '#a8a4a0',
 							userSelect: 'none',
 							flexShrink: 0,
 						}}
@@ -103,12 +100,6 @@ export class ThoughtNodeShapeUtil extends BaseBoxShapeUtil<ThoughtNodeShape> {
 						{shape.props.text}
 					</span>
 				</div>
-				<style>{`
-					.thought-node:hover {
-						box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-						border-color: #b8b4ae !important;
-					}
-				`}</style>
 			</HTMLContainer>
 		)
 	}
