@@ -29,28 +29,30 @@ Built on the [tldraw Agent Starter Kit](https://tldraw.dev/starter-kits/agent).
 client/              → React frontend
   components/
     landing/         → Cinematic landing page (logo → video → demo CTA)
-    thinking-map/    → UI components (BottomBar, HandoffButton, TextChannel, DiffToast, UndoButton, DemoLoader)
+    thinking-map/    → UI components (BottomBar, HandoffButton, TextChannel, DiffToast,
+                       UndoButton, DemoLoader, PersonaSelector, GhostCursor, EmptyCanvasPrompt)
   shapes/            → Custom tldraw shapes (ThoughtNode, Cluster, AgentAnnotation)
   prompts/           → AI system prompt for structural reasoning
   hooks/             → Paste handler
   agent/             → tldraw agent integration (from starter kit)
-  lib/               → Utilities (undo-manager, diff-utils)
-  data/              → Demo scenario data
+  lib/               → Utilities (undo-manager, diff-utils, tension-heartbeat)
+  data/              → Demo scenario data, agent personas
+api/                 → Vercel serverless functions (AI streaming)
 public/landing/      → Landing page media assets (logo, video)
-worker/              → Cloudflare Worker backend (AI provider proxy)
-shared/              → Shared types and schemas
+worker/              → Worker backend (prompt building, model routing)
+shared/              → Shared types, schemas, and icons
 docs/                → Design documents and plans
 ```
 
 ## Custom Shapes
 
-- **ThoughtNode**: Draggable text card (white, hairline border, Inter font)
-- **ClusterShape**: Named group container (dashed border, uppercase label)
-- **AgentAnnotation**: Small badge — question (?), tension (!), or insight (●)
+- **ThoughtNode**: Draggable text card (glass-morphism, translucent fill with backdrop blur, Inter font)
+- **ClusterShape**: Named group container (glass-morphism, dashed border, Instrument Serif label)
+- **AgentAnnotation**: Small badge — question (?), tension (!), or insight (●) — with semantic glow on dark canvas
 
-## Design: Architect's Desk
+## Design: Dark Observatory
 
-Warm canvas (#f8f7f4), dotted grid, hairline-bordered white cards, muted annotation colors, JetBrains Mono for metadata. See [DESIGN.md](DESIGN.md) for the full design system.
+Dark canvas (#1E1D1B), grain texture, glass-morphism nodes, glowing semantic annotations, JetBrains Mono for metadata. See [DESIGN.md](DESIGN.md) for the full design system.
 
 ## Docs
 
@@ -62,18 +64,22 @@ Warm canvas (#f8f7f4), dotted grid, hairline-bordered white cards, muted annotat
 | [Solution (narrative)](docs/solution-narrative.md) | Hackathon-scoped pitch |
 | [Implementation Plan](docs/implementation-plan.md) | CEO + Eng reviewed plan, phased build, architecture, schemas |
 
-## Phase 2 Features
+## Features
 
 - **Undo**: Snapshots canvas before each handoff; "Undo" button reverts to pre-handoff state (up to 3 levels)
 - **Diff Toast**: Floating card after handoff showing what the agent changed (clusters created, nodes moved, etc.), auto-dismisses after 10s
 - **Demo Mode**: "Load Demo" button with 10 pre-loaded GTM strategy fragments containing natural tensions
 - **Tension Visualization**: Red dashed arrows with pulse animation for conflicts; paired with tension annotation badges
 - **Animation Polish**: Fade-in animation for newly created thought nodes
+- **Dark Observatory**: Complete visual identity — dark canvas, glass-morphism nodes, grain texture, annotation glow
+- **Agent Personas**: Segmented pill selector for Strategist / Devil's Advocate / VC Lens modes
+- **Ghost Cursor**: Animated AI cursor overlay during handoff that glides across nodes being analyzed
+- **Tension Heartbeat**: Nodes connected by tension arrows pulse red glow, speed scales with tension count
 
 ## Landing Page
 
-Cinematic entry experience: logo with flow-line animation → full-screen brand video → DEMO button that transitions into the canvas app. The landing page uses its own white/black aesthetic (intentionally distinct from the warm Architect's Desk design system). Media assets live in `public/landing/`.
+Cinematic entry experience: logo with flow-line animation → full-screen brand video → DEMO button that transitions into the canvas app. The landing page uses its own white/black aesthetic (intentionally distinct from the Dark Observatory design system). Media assets live in `public/landing/`.
 
 ## Status
 
-Phase 1 (core loop) and Phase 2 (cherry-picks) built. Landing page integrated.
+Phase 1 (core loop), Phase 2 (undo, diff, demo, tension viz), and Phase 3 (dark observatory, agent personas, ghost cursor, tension heartbeat) shipped. Landing page integrated. Deployed on Vercel.

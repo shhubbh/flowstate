@@ -126,13 +126,15 @@
 
 ## Accessibility
 - **Contrast ratios (WCAG AA, 4.5:1 minimum for text):**
+  - *Dark mode (default):*
+  - Dark mode primary (#E8E5E0) on canvas (#1E1D1B): 12.1:1 ✓
+  - Button text (#f8f7f4) on button bg (#2c2c2c): 11.2:1 ✓
+  - *Light mode (alternate):*
   - Primary text (#3a3a3a) on canvas (#f8f7f4): 8.5:1 ✓
   - Secondary text (#6b6660) on canvas (#f8f7f4): 4.7:1 ✓
-  - Tertiary text (#8b8580) on canvas (#f8f7f4): 3.5:1 ✗ (used for non-essential labels only, meets 3:1 large text threshold)
-  - Button text (#f8f7f4) on button bg (#2c2c2c): 11.2:1 ✓
+  - Tertiary text (#8b8580) on canvas (#f8f7f4): 3.5:1 ✗ (non-essential labels only, meets 3:1 large text threshold)
   - Tension text (#c4553a) on tension bg (#fef2f0): 4.6:1 ✓
   - Insight text (#3d7a53) on insight bg (#eef6f0): 4.8:1 ✓
-  - Dark mode primary (#E8E5E0) on canvas (#1E1D1B): 12.1:1 ✓
 - **Non-color differentiation:** Annotations use distinct icons (? ! •) in addition to color. This is load-bearing for the "color = meaning" principle since colorblind users must distinguish annotation types.
 - **Keyboard nav:**
   - Tab cycles through bottom bar: Demo Loader → Text Channel toggle → Handoff → Undo → Last Diff
