@@ -105,31 +105,36 @@ export class AgentAppPersistenceManager extends BaseAgentAppManager {
 	startAutoSave() {
 		// Watch for changes to the agents list and set up per-agent watchers
 		this.agentsListCleanup = react('agents list', () => {
-			const agents = this.app.agents.getAgents()
-			const currentAgentIds = new Set(agents.map((a) => a.id))
+			try {
+				const agents = this.app.agents.getAgents()
+				const currentAgentIds = new Set(agents.map((a) => a.id))
 
-			// Set up watchers for new agents
-			for (const agent of agents) {
-				if (!this.agentWatcherCleanupFns.has(agent.id)) {
-					const cleanup = this.createAgentStateWatcher(agent)
-					this.agentWatcherCleanupFns.set(agent.id, cleanup)
-				}
-			}
-
-			// Clean up watchers for removed agents
-			for (const id of this.agentWatcherCleanupFns.keys()) {
-				if (!currentAgentIds.has(id)) {
-					const cleanup = this.agentWatcherCleanupFns.get(id)
-					if (cleanup) {
-						cleanup()
+				// Set up watchers for new agents
+				for (const agent of agents) {
+					if (!this.agentWatcherCleanupFns.has(agent.id)) {
+						const cleanup = this.createAgentStateWatcher(agent)
+						this.agentWatcherCleanupFns.set(agent.id, cleanup)
 					}
-					this.agentWatcherCleanupFns.delete(id)
 				}
-			}
 
-			// Save when agent list changes (if not loading)
-			if (!this.isLoadingState) {
-				this.saveState()
+				// Clean up watchers for removed agents
+				for (const id of this.agentWatcherCleanupFns.keys()) {
+					if (!currentAgentIds.has(id)) {
+						const cleanup = this.agentWatcherCleanupFns.get(id)
+						if (cleanup) {
+							cleanup()
+						}
+						this.agentWatcherCleanupFns.delete(id)
+					}
+				}
+
+				// Save when agent list changes (if not loading)
+				if (!this.isLoadingState) {
+					this.saveState()
+				}
+			} catch (e) {
+				if (e instanceof Error && e.message.includes('disposed')) return
+				throw e
 			}
 		})
 	}
@@ -139,17 +144,22 @@ export class AgentAppPersistenceManager extends BaseAgentAppManager {
 	 */
 	private createAgentStateWatcher(agent: TldrawAgent): () => void {
 		return react(`${agent.id} state`, () => {
-			// Access reactive state to trigger on changes
-			agent.chat.getHistory()
-			agent.chatOrigin.getOrigin()
-			agent.todos.getTodos()
-			agent.context.getItems()
-			agent.modelName.getModelName()
-			agent.debug.getDebugFlags()
+			try {
+				// Access reactive state to trigger on changes
+				agent.chat.getHistory()
+				agent.chatOrigin.getOrigin()
+				agent.todos.getTodos()
+				agent.context.getItems()
+				agent.modelName.getModelName()
+				agent.debug.getDebugFlags()
 
-			// Save if not currently loading
-			if (!this.isLoadingState) {
-				this.saveState()
+				// Save if not currently loading
+				if (!this.isLoadingState) {
+					this.saveState()
+				}
+			} catch (e) {
+				if (e instanceof Error && e.message.includes('disposed')) return
+				throw e
 			}
 		})
 	}
@@ -158,13 +168,18 @@ export class AgentAppPersistenceManager extends BaseAgentAppManager {
 	 * Save the current app state to localStorage.
 	 */
 	private saveState() {
-		const agents = this.app.agents.getAgents()
-		// Don't save if no agents exist (e.g., during dispose)
-		if (agents.length === 0) {
-			return
+		try {
+			const agents = this.app.agents.getAgents()
+			// Don't save if no agents exist (e.g., during dispose)
+			if (agents.length === 0) {
+				return
+			}
+			const appState = this.serializeState()
+			this.saveValue('state', appState)
+		} catch (e) {
+			if (e instanceof Error && e.message.includes('disposed')) return
+			throw e
 		}
-		const appState = this.serializeState()
-		this.saveValue('state', appState)
 	}
 
 	/**
