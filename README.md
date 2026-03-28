@@ -8,7 +8,7 @@ Chat forces specification before exploration. Founders whose work is structuring
 
 ## The Solution
 
-A persistent 2D canvas where thought fragments become draggable nodes. The user arranges, connects, and moves nodes to express spatial intent. An AI agent reads the spatial arrangement and structures it — creating clusters, drawing connections, flagging tensions. See [docs/solution-narrative.md](docs/solution-narrative.md).
+A persistent 2d canvas where thought fragments become draggable nodes. The user arranges, connects, and moves nodes to express spatial intent. An AI agent reads the spatial arrangement and structures it — creating clusters, drawing connections, flagging tensions. See [docs/solution-narrative.md](docs/solution-narrative.md).
 
 ## Quick Start
 
