@@ -1,13 +1,8 @@
 {
-	"name": "tldraw-agent",
-	"version": "0.0.0",
+	"name": "thinking-map",
+	"version": "1.0.0",
 	"private": true,
-	"homepage": "https://tldraw.dev",
 	"license": "MIT",
-	"author": {
-		"name": "tldraw GB Ltd.",
-		"email": "hello@tldraw.com"
-	},
 	"type": "module",
 	"scripts": {
 		"build": "vite build",
@@ -18,7 +13,6 @@
 		"@ai-sdk/anthropic": "^2.0.2",
 		"@ai-sdk/google": "^2.0.14",
 		"@ai-sdk/openai": "^2.0.24",
-		"@google/generative-ai": "^0.24.1",
 		"@tldraw/tlschema": "^4.5.4",
 		"ai": "^5.0.63",
 		"best-effort-json-parser": "^1.1.3",
