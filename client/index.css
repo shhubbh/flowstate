@@ -257,6 +257,19 @@ body {
 	opacity: 0.4;
 }
 
+/* Focus rings — DESIGN.md: #5B8A72, 2px solid, 2px offset */
+.handoff-btn:focus-visible,
+.undo-btn:focus-visible,
+.demo-btn:focus-visible,
+.last-diff-btn:focus-visible,
+.text-toggle:focus-visible,
+.primary-btn:focus-visible,
+.logo-btn:focus-visible,
+.diff-toast-close:focus-visible {
+	outline: 2px solid #5B8A72;
+	outline-offset: 2px;
+}
+
 /* Diff Toast */
 .diff-toast {
 	position: fixed;
