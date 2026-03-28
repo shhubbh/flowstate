@@ -4,21 +4,21 @@ import { BaseBoxShapeUtil, HTMLContainer, T, TLBaseShape } from 'tldraw'
 
 const ANNOTATION_STYLES = {
 	question: {
-		bg: '#f0ebe4',
-		color: '#8b7e6e',
-		border: '#d4cfc6',
+		bg: 'var(--tm-question-bg)',
+		color: 'var(--tm-question-color)',
+		border: 'var(--tm-question-border)',
 		icon: '?',
 	},
 	tension: {
-		bg: '#fef2f0',
-		color: '#c4553a',
-		border: '#e8c4bc',
+		bg: 'var(--tm-tension-bg)',
+		color: 'var(--tm-tension-color)',
+		border: 'var(--tm-tension-border)',
 		icon: '!',
 	},
 	insight: {
-		bg: '#eef6f0',
-		color: '#3d7a53',
-		border: '#b8d4c2',
+		bg: 'var(--tm-insight-bg)',
+		color: 'var(--tm-insight-color)',
+		border: 'var(--tm-insight-border)',
 		icon: '\u25CF', // bullet character
 	},
 } as const
@@ -107,13 +107,13 @@ export class AgentAnnotationShapeUtil extends BaseBoxShapeUtil<AgentAnnotationSh
 								bottom: 'calc(100% + 6px)',
 								left: '50%',
 								transform: 'translateX(-50%)',
-								background: '#ffffff',
-								border: '1px solid #d4d0ca',
+								background: 'var(--tm-annotation-tooltip-bg)',
+								border: '1px solid var(--tm-annotation-tooltip-border)',
 								borderRadius: 6,
 								padding: '6px 10px',
 								fontSize: 12,
 								lineHeight: 1.4,
-								color: '#3a3a3a',
+								color: 'var(--tm-text-primary)',
 								whiteSpace: 'nowrap',
 								maxWidth: 220,
 								overflow: 'hidden',

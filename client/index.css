@@ -15,6 +15,19 @@
 	--tm-text-disabled: #b8b4ae;
 	--tm-btn-primary: #2c2c2c;
 	--tm-btn-primary-hover: #404040;
+
+	/* Semantic annotation colors */
+	--tm-question-bg: #f0ebe4;
+	--tm-question-color: #8b7e6e;
+	--tm-question-border: #d4cfc6;
+	--tm-tension-bg: #fef2f0;
+	--tm-tension-color: #c4553a;
+	--tm-tension-border: #e8c4bc;
+	--tm-insight-bg: #eef6f0;
+	--tm-insight-color: #3d7a53;
+	--tm-insight-border: #b8d4c2;
+	--tm-annotation-tooltip-bg: #ffffff;
+	--tm-annotation-tooltip-border: #d4d0ca;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -31,6 +44,19 @@
 		--tm-text-disabled: #5A5754;
 		--tm-btn-primary: #E8E5E0;
 		--tm-btn-primary-hover: #D4D0CA;
+
+		/* Semantic annotation colors (dark, desaturated -15%) */
+		--tm-question-bg: #3A3632;
+		--tm-question-color: #B0A89C;
+		--tm-question-border: #4A4640;
+		--tm-tension-bg: #3A2E2C;
+		--tm-tension-color: #D4796A;
+		--tm-tension-border: #5A3E38;
+		--tm-insight-bg: #2C3A32;
+		--tm-insight-color: #6DA47E;
+		--tm-insight-border: #3E5A48;
+		--tm-annotation-tooltip-bg: #2A2826;
+		--tm-annotation-tooltip-border: #5A5754;
 	}
 }
 
