@@ -79,7 +79,7 @@ export function GhostCursor() {
 				<path
 					d="M1 1L1 21L6 16L11 26L14 24.5L9 14.5L16 13L1 1Z"
 					fill="#A8A4A0"
-					fillOpacity={0.7}
+					fillOpacity={0.85}
 					stroke="#7A7672"
 					strokeWidth={1}
 					strokeLinejoin="round"

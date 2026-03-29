@@ -149,7 +149,8 @@ body {
 }
 
 .bottom-bar-text-channel input:focus {
-	border-color: var(--tm-text-tertiary);
+	border-color: var(--tm-text-secondary);
+	box-shadow: 0 0 0 2px rgba(168, 164, 160, 0.12);
 }
 
 .bottom-bar-text-channel input::placeholder {
@@ -168,12 +169,14 @@ body {
 	font-weight: 500;
 	font-family: 'Inter', sans-serif;
 	cursor: pointer;
-	transition: background 0.15s;
+	transition: background 0.15s, box-shadow 0.2s;
 	letter-spacing: 0.01em;
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 .handoff-btn:hover {
 	background: var(--tm-btn-primary-hover);
+	box-shadow: 0 2px 12px rgba(232, 229, 224, 0.2);
 }
 
 .handoff-btn:disabled {
@@ -185,6 +188,12 @@ body {
 .handoff-btn.thinking {
 	background: var(--tm-text-secondary);
 	cursor: wait;
+	animation: thinking-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes thinking-pulse {
+	0%, 100% { opacity: 0.75; }
+	50% { opacity: 1; }
 }
 
 .undo-btn {
@@ -224,11 +233,11 @@ body {
 	height: 32px;
 	padding: 0 12px;
 	background: transparent;
-	border: 1px solid var(--tm-border);
+	border: 1px solid var(--tm-border-medium);
 	border-radius: 6px;
 	font-size: 12px;
 	font-family: 'Inter', sans-serif;
-	color: var(--tm-text-tertiary);
+	color: var(--tm-text-secondary);
 	cursor: pointer;
 	transition: all 0.15s;
 	white-space: nowrap;
@@ -238,6 +247,7 @@ body {
 	background: var(--tm-surface-hover);
 	border-color: var(--tm-border-medium);
 	color: var(--tm-text-primary);
+	box-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
 }
 
 /* Last Diff button */
@@ -369,9 +379,13 @@ body {
 	color: var(--tm-text-primary) !important;
 	animation: shape-fade-in 0.3s ease-out;
 }
+.thought-node {
+	transition: box-shadow 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+}
 .thought-node:hover {
 	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2) !important;
 	border-color: rgba(106, 103, 100, 0.6) !important;
+	transform: scale(1.01);
 }
 .thought-node .thought-node-id {
 	color: var(--tm-text-tertiary) !important;
@@ -386,7 +400,8 @@ body {
 }
 .cluster-label {
 	background: var(--tm-canvas) !important;
-	color: var(--tm-text-secondary) !important;
+	color: var(--tm-text-primary) !important;
+	letter-spacing: 0.02em;
 }
 
 @keyframes shape-fade-in {
@@ -1212,7 +1227,7 @@ button.prompt-tag span {
 	text-align: center;
 	pointer-events: none;
 	z-index: 1;
-	opacity: 0.6;
+	opacity: 0.7;
 }
 
 .empty-canvas-prompt h2 {
@@ -1233,8 +1248,8 @@ button.prompt-tag span {
 
 /* Subtle breathing animation for empty state heading */
 @keyframes empty-breathe {
-	0%, 100% { opacity: 0.5; }
-	50% { opacity: 0.8; }
+	0%, 100% { opacity: 0.55; }
+	50% { opacity: 0.9; }
 }
 
 /* DRY: shared toast base (eng review) */
@@ -1378,7 +1393,7 @@ button.prompt-tag span {
 .ghost-cursor-svg {
 	transition: top 350ms ease-in-out, left 350ms ease-in-out;
 	opacity: 0.8;
-	filter: drop-shadow(0 0 12px rgba(168, 164, 160, 0.3));
+	filter: drop-shadow(0 0 16px rgba(168, 164, 160, 0.45));
 	pointer-events: none;
 }
 .ghost-cursor-svg.fading-out {
@@ -1415,7 +1430,7 @@ button.prompt-tag span {
 .persona-pill.active {
 	color: var(--tm-text-primary);
 	background: rgba(58, 56, 54, 0.8);
-	box-shadow: 0 0 8px rgba(232, 229, 224, 0.08);
+	box-shadow: 0 0 12px rgba(232, 229, 224, 0.18);
 }
 .persona-pill:disabled {
 	opacity: 0.4;

@@ -32,5 +32,5 @@ export function asColor(color: string): IFocusedColor {
 		}
 	}
 
-	return 'black'
+	return 'white'
 }
