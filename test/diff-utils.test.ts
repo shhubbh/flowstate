@@ -2,14 +2,30 @@ import { describe, it, expect } from 'vitest'
 import { computeHandoffDiff } from '../client/lib/diff-utils'
 import type { TLShape, TLShapeId } from 'tldraw'
 
-function makeShape(id: string, type: string, x = 0, y = 0): TLShape {
-	return { id: id as TLShapeId, type, x, y, props: {} } as any
+function makeShape(
+	id: string,
+	type: string,
+	x = 0,
+	y = 0,
+	props: Record<string, unknown> = {},
+	meta: Record<string, unknown> = {}
+): TLShape {
+	return { id: id as TLShapeId, type, x, y, props, meta } as any
 }
 
 describe('computeHandoffDiff', () => {
-	it('detects created clusters', () => {
+	it('detects created cluster frames', () => {
 		const before = new Map<TLShapeId, TLShape>()
-		const after = [makeShape('shape:1', 'cluster')]
+		const after = [
+			makeShape(
+				'shape:1',
+				'geo',
+				0,
+				0,
+				{ geo: 'rectangle', color: 'grey' },
+				{ note: 'artifact:cluster-frame' }
+			),
+		]
 
 		const diff = computeHandoffDiff(before, after)
 		expect(diff.clustersCreated).toBe(1)
@@ -17,12 +33,23 @@ describe('computeHandoffDiff', () => {
 		expect(diff.summaryText).toContain('1 cluster')
 	})
 
-	it('detects created arrows and annotations', () => {
+	it('detects created arrows and annotation text', () => {
 		const before = new Map<TLShapeId, TLShape>()
 		const after = [
 			makeShape('shape:1', 'arrow'),
 			makeShape('shape:2', 'arrow'),
-			makeShape('shape:3', 'agent-annotation'),
+			makeShape(
+				'shape:3',
+				'text',
+				0,
+				0,
+				{
+					richText: {
+						content: [{ text: '💡 Tighten the wedge' }],
+					},
+				},
+				{ note: 'artifact:annotation' }
+			),
 		]
 
 		const diff = computeHandoffDiff(before, after)
@@ -76,8 +103,26 @@ describe('computeHandoffDiff', () => {
 		const after = [
 			makeShape('shape:1', 'thought-node', 100, 0), // moved
 			// shape:2 deleted
-			makeShape('shape:3', 'cluster'), // new
-			makeShape('shape:4', 'agent-annotation'), // new
+			makeShape(
+				'shape:3',
+				'geo',
+				0,
+				0,
+				{ geo: 'rectangle', color: 'grey' },
+				{ note: 'artifact:cluster-frame' }
+			), // new
+			makeShape(
+				'shape:4',
+				'text',
+				0,
+				0,
+				{
+					richText: {
+						content: [{ text: '⚡ Pricing conflicts with premium brand' }],
+					},
+				},
+				{ note: 'artifact:annotation' }
+			), // new
 		]
 
 		const diff = computeHandoffDiff(before, after)

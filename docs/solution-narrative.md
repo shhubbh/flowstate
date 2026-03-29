@@ -1,5 +1,7 @@
 # Solution Narrative: Thinking Map
 
+> Historical planning/design document. For the current implementation status and recent reliability fixes, see [`docs/current-status.md`](current-status.md).
+
 ## The One-Liner
 
 A spatial co-thinking tool where an AI agent and a founder jointly build and reshape a living map of strategic decisions — through gesture, not chat.

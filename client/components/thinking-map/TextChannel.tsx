@@ -1,9 +1,21 @@
 import { FormEventHandler, useCallback, useRef, useState } from 'react'
+import { useToasts } from 'tldraw'
 import { useAgent, useTldrawAgentApp } from '../../agent/TldrawAgentAppProvider'
+import type { AgentBackendStatusResponse } from '../../../shared/agent-runtime-status'
+import { getAgentRuntimeErrorMessage } from '../../../shared/types/AgentRuntimeError'
 
-export function TextChannel({ disabled }: { disabled?: boolean }) {
+export function TextChannel({
+	disabled,
+	disabledReason,
+	refreshBackendStatus,
+}: {
+	disabled?: boolean
+	disabledReason?: string
+	refreshBackendStatus: () => Promise<AgentBackendStatusResponse>
+}) {
 	const agent = useAgent()
 	const editor = useTldrawAgentApp().editor
+	const toasts = useToasts()
 	const inputRef = useRef<HTMLInputElement>(null)
 	const [isExpanded, setIsExpanded] = useState(false)
 
@@ -18,7 +30,17 @@ export function TextChannel({ disabled }: { disabled?: boolean }) {
 			setIsExpanded(false)
 
 			try {
-				agent.interrupt({
+				const backendStatus = await refreshBackendStatus()
+				if (!backendStatus.ready) {
+					toasts.addToast({
+						title: 'AI setup required',
+						description: backendStatus.message,
+						severity: 'warning',
+					})
+					return
+				}
+
+				const result = agent.interrupt({
 					input: {
 						agentMessages: [value],
 						bounds: editor.getViewportPageBounds(),
@@ -26,11 +48,27 @@ export function TextChannel({ disabled }: { disabled?: boolean }) {
 						contextItems: agent.context.getItems(),
 					},
 				})
+
+				if (result) {
+					const runResult = await result
+					if (!runResult.didMutateCanvas && runResult.messageActionCount === 0) {
+						toasts.addToast({
+							title: 'No response',
+							description: 'The agent finished without changing the canvas or sending a message.',
+							severity: 'warning',
+						})
+					}
+				}
 			} catch (err) {
 				console.error('Text channel failed:', err)
+				toasts.addToast({
+					title: 'Text channel failed',
+					description: getAgentRuntimeErrorMessage(err),
+					severity: 'error',
+				})
 			}
 		},
-		[agent, editor]
+		[agent, editor, refreshBackendStatus, toasts]
 	)
 
 	return (
@@ -40,7 +78,7 @@ export function TextChannel({ disabled }: { disabled?: boolean }) {
 				onMouseDown={(e) => e.preventDefault()}
 				onClick={() => !disabled && setIsExpanded(!isExpanded)}
 				disabled={disabled}
-				title={disabled ? 'Wait for agent to finish' : 'Ask the agent something'}
+				title={disabled ? disabledReason ?? 'Wait for agent to finish' : 'Ask the agent something'}
 			>
 				&#9998;
 			</button>

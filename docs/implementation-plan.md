@@ -1,5 +1,7 @@
 # Plan: Thinking Map — Hackathon Prototype
 
+> Historical planning/design document. For the current implementation status and recent reliability fixes, see [`docs/current-status.md`](current-status.md).
+
 ## Context
 
 Chat forces specification before exploration. People whose work is structuring the unstructured (founders, strategists, researchers) have no tool combining intelligence + spatial persistence + cheap branching. The solution: a spatial, gesture-primary, agent co-owned thinking space where the user works through gesture and the agent actively maintains structure.

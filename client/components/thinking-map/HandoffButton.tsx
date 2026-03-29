@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { TLShape, TLShapeId, useValue } from 'tldraw'
+import { TLShape, TLShapeId, useToasts, useValue } from 'tldraw'
 import { useAgent, useTldrawAgentApp } from '../../agent/TldrawAgentAppProvider'
 import type { AgentPersona } from '../../data/agent-personas'
+import type { AgentBackendStatusResponse } from '../../../shared/agent-runtime-status'
+import { getAgentRuntimeErrorMessage } from '../../../shared/types/AgentRuntimeError'
+import {
+	clearAgentArtifactShapes,
+	getHandoffDiffBaseline,
+	getUserOwnedShapeCount,
+} from '../../lib/agent-artifacts'
 import { computeHandoffDiff, HandoffDiffSummary } from '../../lib/diff-utils'
 import { applyTensionHeartbeats, clearTensionHeartbeats } from '../../lib/tension-heartbeat'
 import type { UndoManager } from '../../lib/undo-manager'
@@ -11,17 +18,26 @@ interface HandoffButtonProps {
 	undoManager: UndoManager
 	onHandoffComplete?: (diff: HandoffDiffSummary) => void
 	persona?: AgentPersona
+	disabled?: boolean
+	disabledReason?: string
+	refreshBackendStatus: () => Promise<AgentBackendStatusResponse>
 }
 
-export function HandoffButton({ undoManager, onHandoffComplete, persona }: HandoffButtonProps) {
+export function HandoffButton({
+	undoManager,
+	onHandoffComplete,
+	persona,
+	disabled = false,
+	disabledReason,
+	refreshBackendStatus,
+}: HandoffButtonProps) {
 	const agent = useAgent()
 	const editor = useTldrawAgentApp().editor
+	const toasts = useToasts()
 	const [isThinking, setIsThinking] = useState(false)
 	const beforeShapesRef = useRef<Map<TLShapeId, TLShape>>(new Map())
 	const staggerTimeoutIds = useRef<number[]>([])
-
-	const shapeCount = useValue('shapeCount', () => editor.getCurrentPageShapes().length, [editor])
-	const isGenerating = useValue('isGenerating', () => agent.requests.isGenerating(), [agent])
+	const userShapeCount = useValue('userShapeCount', () => getUserOwnedShapeCount(editor), [editor])
 
 	// Clean up ghost presence classes and stagger timeouts
 	const cleanupGhostPresence = useCallback(() => {
@@ -44,22 +60,6 @@ export function HandoffButton({ undoManager, onHandoffComplete, persona }: Hando
 		})
 	}, [editor])
 
-	// Detect agent completion for diff computation + thinking state reset
-	const prevIsGenerating = useRef(false)
-	useEffect(() => {
-		if (prevIsGenerating.current && !isGenerating) {
-			// Agent just finished — compute diff
-			const afterShapes = editor.getCurrentPageShapes()
-			const diff = computeHandoffDiff(beforeShapesRef.current, afterShapes)
-			onHandoffComplete?.(diff)
-			cleanupGhostPresence()
-			setIsThinking(false)
-			// Apply tension heartbeats after agent finishes
-			requestAnimationFrame(() => applyTensionHeartbeats(editor))
-		}
-		prevIsGenerating.current = isGenerating
-	}, [isGenerating, editor, onHandoffComplete, cleanupGhostPresence])
-
 	// Cleanup on unmount
 	useEffect(() => {
 		return () => {
@@ -69,10 +69,27 @@ export function HandoffButton({ undoManager, onHandoffComplete, persona }: Hando
 	}, [])
 
 	const handleHandoff = useCallback(async () => {
-		if (shapeCount === 0 || isThinking) return
+		if (disabled || isThinking) return
+
+		const backendStatus = await refreshBackendStatus()
+		if (!backendStatus.ready) {
+			toasts.addToast({
+				title: 'AI setup required',
+				description: backendStatus.message,
+				severity: 'warning',
+			})
+			return
+		}
+
+		const shapeCount = getUserOwnedShapeCount(editor)
+		if (shapeCount === 0) return
 
 		if (shapeCount > 40) {
-			alert('Canvas has too many nodes (40+ shapes). Remove some before handoff.')
+			toasts.addToast({
+				title: 'Canvas too large',
+				description: 'Canvas has too many nodes (40+ non-agent shapes). Remove some before handoff.',
+				severity: 'warning',
+			})
 			return
 		}
 
@@ -80,12 +97,17 @@ export function HandoffButton({ undoManager, onHandoffComplete, persona }: Hando
 			console.warn(`Node count warning: ${shapeCount} shapes on canvas`)
 		}
 
-		// Snapshot for undo
-		undoManager.takeSnapshot(editor)
+		undoManager.beginSnapshot(editor)
+		beforeShapesRef.current = getHandoffDiffBaseline(editor)
 
-		// Snapshot shapes for diff computation
-		beforeShapesRef.current = new Map(
-			editor.getCurrentPageShapes().map((s) => [s.id, s])
+		editor.run(
+			() => {
+				clearAgentArtifactShapes(editor)
+			},
+			{
+				ignoreShapeLock: true,
+				history: 'ignore',
+			}
 		)
 
 		setIsThinking(true)
@@ -109,7 +131,7 @@ export function HandoffButton({ undoManager, onHandoffComplete, persona }: Hando
 		staggerTimeoutIds.current.push(delayId)
 
 		try {
-			agent.interrupt({
+			const result = agent.interrupt({
 				input: {
 					agentMessages: [buildHandoffPrompt(persona?.promptSuffix)],
 					bounds: editor.getViewportPageBounds(),
@@ -117,23 +139,65 @@ export function HandoffButton({ undoManager, onHandoffComplete, persona }: Hando
 					contextItems: agent.context.getItems(),
 				},
 			})
+
+			if (!result) {
+				throw new Error('The handoff did not start.')
+			}
+
+			const runResult = await result
+			if (!runResult.didMutateCanvas) {
+				undoManager.rollbackPending(editor)
+				toasts.addToast({
+					title: 'No canvas changes',
+					description:
+						runResult.messageActionCount > 0
+							? 'The agent responded, but it did not change the canvas.'
+							: 'The agent finished without producing any canvas changes.',
+					severity: 'warning',
+				})
+				return
+			}
+
+			undoManager.commitSnapshot()
+			const afterShapes = editor.getCurrentPageShapes()
+			const diff = computeHandoffDiff(beforeShapesRef.current, afterShapes)
+			onHandoffComplete?.(diff)
+			requestAnimationFrame(() => applyTensionHeartbeats(editor))
 		} catch (err) {
 			console.error('Handoff failed:', err)
-			alert('Handoff failed. Please try again.')
+			undoManager.rollbackPending(editor)
+			toasts.addToast({
+				title: 'Handoff failed',
+				description: getAgentRuntimeErrorMessage(err),
+				severity: 'error',
+			})
+			beforeShapesRef.current = new Map()
+		} finally {
 			beforeShapesRef.current = new Map()
 			cleanupGhostPresence()
 			setIsThinking(false)
 		}
-	}, [agent, editor, shapeCount, isThinking, undoManager, cleanupGhostPresence])
+	}, [
+		agent,
+		cleanupGhostPresence,
+		disabled,
+		editor,
+		isThinking,
+		onHandoffComplete,
+		persona?.promptSuffix,
+		refreshBackendStatus,
+		toasts,
+		undoManager,
+	])
 
-	const isDisabled = shapeCount === 0 || isThinking
+	const isDisabled = disabled || isThinking || userShapeCount === 0
 
 	return (
 		<button
 			className={`handoff-btn ${isThinking ? 'thinking' : ''}`}
 			onClick={handleHandoff}
 			disabled={isDisabled}
-			title={shapeCount === 0 ? 'Add some thoughts first' : 'Hand off to the agent'}
+			title={userShapeCount === 0 ? 'Add some thoughts first' : (disabledReason ?? 'Hand off to the agent')}
 		>
 			{isThinking ? 'Thinking...' : 'Handoff'}
 		</button>

@@ -71,6 +71,43 @@ body {
 	overflow-x: auto;
 }
 
+.agent-status-banner {
+	position: fixed;
+	left: 16px;
+	right: 16px;
+	bottom: 64px;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	flex-wrap: wrap;
+	padding: 10px 14px;
+	border-radius: 8px;
+	border: 1px solid var(--tm-border);
+	background: rgba(27, 23, 20, 0.96);
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+	font-family: 'Inter', sans-serif;
+	z-index: 1001;
+}
+
+.agent-status-banner.not-ready {
+	border-color: rgba(211, 155, 68, 0.35);
+}
+
+.agent-status-banner-title {
+	flex-shrink: 0;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: var(--tm-text-secondary);
+}
+
+.agent-status-banner-message {
+	font-size: 12px;
+	line-height: 1.5;
+	color: var(--tm-text-primary);
+}
+
 .bottom-bar-text-channel {
 	flex: 1;
 	display: flex;

@@ -19,9 +19,12 @@ export const UpsertTodoListItemActionUtil = registerActionUtil(
 			const index = this.agent.todos.getTodos().findIndex((item) => item.id === id)
 			if (index === -1) {
 				if (!text) {
-					this.agent.interrupt({
+					const result = this.agent.interrupt({
 						input: 'You must provide text when creating a new todo item.',
 					})
+					if (result) {
+						void result.catch((error) => this.agent.onError(error))
+					}
 					return
 				}
 				this.agent.todos.push(id, text)

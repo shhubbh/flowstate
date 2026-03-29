@@ -1,5 +1,6 @@
 import { createContext, memo, ReactNode, useCallback, useContext, useEffect, useState } from 'react'
 import { useEditor, useToasts, useValue } from 'tldraw'
+import { getAgentRuntimeErrorMessage } from '../../shared/types/AgentRuntimeError'
 import { TldrawAgent } from './TldrawAgent'
 import { TldrawAgentApp } from './TldrawAgentApp'
 
@@ -63,9 +64,9 @@ export const TldrawAgentAppProvider = memo(function TldrawAgentAppProvider({
 	// Error handler for agent errors
 	const handleError = useCallback(
 		(e: any) => {
-			const message = typeof e === 'string' ? e : e instanceof Error && e.message
+			const message = getAgentRuntimeErrorMessage(e)
 			toasts.addToast({
-				title: 'Error',
+				title: 'AI unavailable',
 				description: message || 'An error occurred',
 				severity: 'error',
 			})

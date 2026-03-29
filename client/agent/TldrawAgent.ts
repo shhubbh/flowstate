@@ -1,10 +1,28 @@
-import { Editor, RecordsDiff, reverseRecordsDiff, structuredClone, TLRecord } from 'tldraw'
+import {
+	Editor,
+	RecordsDiff,
+	isRecordsDiffEmpty,
+	reverseRecordsDiff,
+	structuredClone,
+	TLRecord,
+} from 'tldraw'
 import { convertTldrawShapeToFocusedShape } from '../../shared/format/convertTldrawShapeToFocusedShape'
 import { AgentModelName } from '../../shared/models'
 import { AgentAction } from '../../shared/types/AgentAction'
 import { AgentInput } from '../../shared/types/AgentInput'
 import { AgentPrompt, BaseAgentPrompt } from '../../shared/types/AgentPrompt'
+import {
+	EMPTY_AGENT_RUN_RESULT,
+	mergeAgentRunResults,
+	type AgentRunResult,
+} from '../../shared/types/AgentRunResult'
 import { AgentRequest } from '../../shared/types/AgentRequest'
+import {
+	AgentRuntimeError,
+	isAgentRuntimeErrorData,
+	toAgentRuntimeError,
+	type AgentRuntimeErrorPayload,
+} from '../../shared/types/AgentRuntimeError'
 import { ChatHistoryItem, ChatHistoryPromptItem } from '../../shared/types/ChatHistoryItem'
 import { ContextItem } from '../../shared/types/ContextItem'
 import { PromptPart } from '../../shared/types/PromptPart'
@@ -297,7 +315,7 @@ export class TldrawAgent {
 	 *
 	 * @returns A promise for when the agent has finished its work.
 	 */
-	async prompt(input: AgentInput, { nested = false }: { nested?: boolean } = {}) {
+	async prompt(input: AgentInput, { nested = false }: { nested?: boolean } = {}): Promise<AgentRunResult> {
 		if (this.requests.isGenerating() && !nested) {
 			throw new Error('Agent is already prompting. Please wait for the current prompt to finish.')
 		}
@@ -315,53 +333,60 @@ export class TldrawAgent {
 		startingNode.onPromptStart?.(this, request)
 
 		// Submit the request to the agent.
+		let runResult: AgentRunResult
 		try {
-			await this.request(request)
+			runResult = await this.request(request)
 		} catch (e) {
-			console.error('Error data:', e)
 			this.requests.setIsPrompting(false)
 			this.requests.setCancelFn(null)
-			return
+			throw e
 		}
 
-		let modeChanged = true
-		while (!this.requests.getScheduledRequest() && modeChanged) {
-			modeChanged = false
-			const currentModeType = this.mode.getCurrentModeType()
-			const currentModeNode = this.mode.getCurrentModeNode()
-			currentModeNode.onPromptEnd?.(this, request) // in case onPromptEnd switches modes
-			const newModeType = this.mode.getCurrentModeType()
-			if (newModeType !== currentModeType) {
-				modeChanged = true
+		try {
+			let modeChanged = true
+			while (!this.requests.getScheduledRequest() && modeChanged) {
+				modeChanged = false
+				const currentModeType = this.mode.getCurrentModeType()
+				const currentModeNode = this.mode.getCurrentModeNode()
+				currentModeNode.onPromptEnd?.(this, request) // in case onPromptEnd switches modes
+				const newModeType = this.mode.getCurrentModeType()
+				if (newModeType !== currentModeType) {
+					modeChanged = true
+				}
 			}
-		}
 
-		// If there's still no scheduled request, quit
-		const scheduledRequest = this.requests.getScheduledRequest()
-		const eventualModeType = this.mode.getCurrentModeType()
-		const eventualModeDefinition = this.mode.getCurrentModeDefinition()
-		if (!scheduledRequest) {
-			if (eventualModeDefinition.active) {
-				throw new Error(
-					`Agent is not allowed to become inactive during the active mode: ${eventualModeType}`
-				)
+			// If there's still no scheduled request, quit
+			const scheduledRequest = this.requests.getScheduledRequest()
+			const eventualModeType = this.mode.getCurrentModeType()
+			const eventualModeDefinition = this.mode.getCurrentModeDefinition()
+			if (!scheduledRequest) {
+				if (eventualModeDefinition.active) {
+					throw new Error(
+						`Agent is not allowed to become inactive during the active mode: ${eventualModeType}`
+					)
+				}
+				this.requests.setIsPrompting(false)
+				this.requests.setCancelFn(null)
+				return runResult
 			}
+
+			// If there *is* a scheduled request...
+			// Add the scheduled request to chat history
+			const resolvedData = await Promise.all(scheduledRequest.data)
+			this.chat.push({
+				type: 'continuation',
+				data: resolvedData,
+			})
+
+			// Handle the scheduled request and clear it
+			this.requests.clearScheduledRequest()
+			const scheduledResult = await this.prompt(scheduledRequest, { nested: true })
+			return mergeAgentRunResults([runResult, scheduledResult])
+		} catch (error) {
 			this.requests.setIsPrompting(false)
 			this.requests.setCancelFn(null)
-			return
+			throw error
 		}
-
-		// If there *is* a scheduled request...
-		// Add the scheduled request to chat history
-		const resolvedData = await Promise.all(scheduledRequest.data)
-		this.chat.push({
-			type: 'continuation',
-			data: resolvedData,
-		})
-
-		// Handle the scheduled request and clear it
-		this.requests.clearScheduledRequest()
-		await this.prompt(scheduledRequest, { nested: true })
 	}
 
 	/**
@@ -378,7 +403,7 @@ export class TldrawAgent {
 	 * @returns A promise for when the request is complete and a cancel function
 	 * to abort the request.
 	 */
-	async request(input: AgentInput) {
+	async request(input: AgentInput): Promise<AgentRunResult> {
 		const request = this.requests.getFullRequestFromInput(input)
 
 		// Interrupt any currently active request
@@ -392,10 +417,11 @@ export class TldrawAgent {
 
 		this.requests.setCancelFn(cancel)
 
-		const results = await promise
-		this.requests.clearActiveRequest()
-
-		return results
+		try {
+			return await promise
+		} finally {
+			this.requests.clearActiveRequest()
+		}
 	}
 
 	/**
@@ -422,18 +448,17 @@ export class TldrawAgent {
 	 * agent.schedule({ data: [value] })
 	 * ```
 	 */
-	schedule(input: AgentInput) {
+	schedule(input: AgentInput): Promise<AgentRunResult> | void {
 		const scheduledRequest = this.requests.getScheduledRequest()
 
 		// If there's no request scheduled yet, schedule one
 		if (!scheduledRequest) {
-			this._schedule(input)
-			return
+			return this._schedule(input)
 		}
 
 		const newRequest = this.requests.getPartialRequestFromInput(input)
 
-		this._schedule({
+		return this._schedule({
 			// Append to properties where possible
 			agentMessages: [...scheduledRequest.agentMessages, ...(newRequest.agentMessages ?? [])],
 			userMessages: [...scheduledRequest.userMessages, ...(newRequest.userMessages ?? [])],
@@ -471,7 +496,7 @@ export class TldrawAgent {
 	 * @param input - What to set the scheduled request to, or null to cancel
 	 * the scheduled request.
 	 */
-	private _schedule(input: AgentInput | null) {
+	private _schedule(input: AgentInput | null): Promise<AgentRunResult> | void {
 		if (input === null) {
 			this.requests.clearScheduledRequest()
 			return
@@ -486,7 +511,7 @@ export class TldrawAgent {
 		if (isCurrentlyActive) {
 			this.requests.setScheduledRequest(request)
 		} else {
-			this.prompt(request)
+			return this.prompt(request)
 		}
 	}
 
@@ -494,13 +519,19 @@ export class TldrawAgent {
 	 * Interrupt the agent and set their mode.
 	 * Optionally, schedule a request.
 	 */
-	interrupt({ input, mode }: { input: AgentInput | null; mode?: AgentModeType }) {
+	interrupt({
+		input,
+		mode,
+	}: {
+		input: AgentInput | null
+		mode?: AgentModeType
+	}): Promise<AgentRunResult> | void {
 		this.requests.cancel()
 		if (mode) {
 			this.mode.setMode(mode)
 		}
 		if (input !== null) {
-			this.schedule(input)
+			return this.schedule(input)
 		}
 	}
 
@@ -589,6 +620,8 @@ export class TldrawAgent {
 			const prompt = await this.preparePrompt(request, helpers)
 			let incompleteDiff: RecordsDiff<TLRecord> | null = null
 			const actionPromises: Promise<void>[] = []
+			let appliedActionCount = 0
+			let messageActionCount = 0
 			try {
 				for await (const action of this.streamAgentActions({ prompt, signal })) {
 					if (cancelled) break
@@ -630,6 +663,14 @@ export class TldrawAgent {
 									actionPromises.push(promise)
 								}
 
+								if (transformedAction.complete && actionUtilType === 'message') {
+									messageActionCount += 1
+								}
+
+								if (transformedAction.complete && !isRecordsDiffEmpty(diff)) {
+									appliedActionCount += 1
+								}
+
 								// Track shapes from diff for both complete and incomplete actions
 								this.lints.trackShapesFromDiff(diff)
 
@@ -651,11 +692,17 @@ export class TldrawAgent {
 					}
 				}
 				await Promise.all(actionPromises)
+				return {
+					status: appliedActionCount > 0 ? 'success' : 'noop',
+					didMutateCanvas: appliedActionCount > 0,
+					appliedActionCount,
+					messageActionCount,
+				} satisfies AgentRunResult
 			} catch (e) {
 				if (e === 'Cancelled by user' || (e instanceof Error && e.name === 'AbortError')) {
-					return
+					return EMPTY_AGENT_RUN_RESULT
 				}
-				this.onError(e)
+				throw toAgentRuntimeError(e)
 			}
 		})()
 
@@ -679,18 +726,39 @@ export class TldrawAgent {
 	}: {
 		prompt: BaseAgentPrompt
 		signal: AbortSignal
-	}): AsyncGenerator<Streaming<AgentAction>> {
-		const res = await fetch('/api/stream', {
-			method: 'POST',
-			body: JSON.stringify(prompt),
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			signal,
-		})
+		}): AsyncGenerator<Streaming<AgentAction>> {
+		let res: Response
+		try {
+			res = await fetch('/api/stream', {
+				method: 'POST',
+				body: JSON.stringify(prompt),
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				signal,
+			})
+		} catch (error) {
+			throw new AgentRuntimeError({
+				code: 'network_error',
+				message: 'Could not reach the local AI endpoint. Make sure `npm run dev` is still running.',
+				retryable: true,
+			})
+		}
+
+		if (!res.ok) {
+			throw new AgentRuntimeError({
+				code: 'network_error',
+				message: `The AI endpoint returned ${res.status}. Try restarting \`npm run dev\`.`,
+				retryable: true,
+			})
+		}
 
 		if (!res.body) {
-			throw Error('No body in response')
+			throw new AgentRuntimeError({
+				code: 'network_error',
+				message: 'The AI endpoint returned an empty response body.',
+				retryable: true,
+			})
 		}
 
 		const reader = res.body.getReader()
@@ -714,13 +782,41 @@ export class TldrawAgent {
 
 							// If the response contains an error, throw it
 							if ('error' in data) {
-								throw new Error(data.error)
+								const payload = data as AgentRuntimeErrorPayload
+								if (typeof payload.error === 'string') {
+									throw new AgentRuntimeError({
+										code: 'provider_request_failed',
+										message: payload.error,
+										retryable: true,
+									})
+								}
+
+								if (isAgentRuntimeErrorData(payload.error)) {
+									throw new AgentRuntimeError(payload.error)
+								}
+
+								throw new AgentRuntimeError({
+									code: 'provider_request_failed',
+									message: 'The AI request failed.',
+									retryable: true,
+								})
 							}
 
 							const agentAction: Streaming<AgentAction> = data
 							yield agentAction
 						} catch (err: any) {
-							throw new Error(err.message)
+							if (err instanceof AgentRuntimeError || isAgentRuntimeErrorData(err)) {
+								throw toAgentRuntimeError(err)
+							}
+
+							throw new AgentRuntimeError({
+								code: 'invalid_model_output',
+								message:
+									err instanceof Error
+										? err.message
+										: 'The AI returned output that could not be parsed.',
+								retryable: true,
+							})
 						}
 					}
 				}

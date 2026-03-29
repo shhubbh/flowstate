@@ -1,5 +1,7 @@
 # Solution Space: The Thinking Map — V1 (Working Draft)
 
+> Historical planning/design document. For the current implementation status and recent reliability fixes, see [`docs/current-status.md`](current-status.md).
+
 ## The Paradigm in One Line
 
 A spatial, persistent, agent-co-owned thinking space where the user works through gesture and the agent actively maintains structure — replacing chat's sequential text exchange with a living map of evolving understanding.

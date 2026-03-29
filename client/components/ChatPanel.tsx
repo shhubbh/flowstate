@@ -25,7 +25,7 @@ export function ChatPanel() {
 			inputRef.current.value = ''
 
 			// Sending a new message to the agent should interrupt the current request
-			agent.interrupt({
+			const result = agent.interrupt({
 				input: {
 					agentMessages: [value],
 					bounds: agent.editor.getViewportPageBounds(),
@@ -33,6 +33,10 @@ export function ChatPanel() {
 					contextItems: agent.context.getItems(),
 				},
 			})
+
+			if (result) {
+				void result.catch((error) => agent.onError(error))
+			}
 		},
 		[agent]
 	)
