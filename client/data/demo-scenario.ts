@@ -1,20 +1,28 @@
 export const DEMO_SCENARIO = {
-	name: 'Founder GTM Scenario',
-	description: 'A messy collection of go-to-market thoughts for a B2B startup',
+	name: 'AI Startup Strategy Brain Dump',
+	description: 'A messy brain dump of strategic thoughts for an AI startup — contradictions, half-formed ideas, and competing priorities',
 	nodes: [
-		{ text: 'Target SMB with self-serve onboarding', x: 120, y: 100 },
-		{ text: 'Enterprise deals need dedicated sales reps', x: 480, y: 70 },
-		{ text: 'Pricing: $29/mo starter, $99/mo pro', x: 80, y: 290 },
-		{ text: 'Competitor X just raised $50M for enterprise play', x: 520, y: 310 },
-		{
-			text: 'Our dev team is 3 people \u2014 can we support enterprise SLA?',
-			x: 280,
-			y: 460,
-		},
-		{ text: 'Content marketing drives 60% of leads', x: 760, y: 140 },
-		{ text: 'Need outbound sales for enterprise pipeline', x: 720, y: 360 },
-		{ text: 'Product-led growth requires low-touch UX', x: 170, y: 560 },
-		{ text: 'Q3 goal: 100 paying customers', x: 490, y: 570 },
-		{ text: 'VCs want to see enterprise traction', x: 660, y: 510 },
+		// GTM cluster candidates (scattered far apart)
+		{ text: 'Start with developers — they tell their managers', x: 60, y: 520 },
+		{ text: 'Enterprise pilot with 3 Fortune 500 cos?', x: 820, y: 80 },
+		{ text: 'Freemium → convert at team level', x: 430, y: 750 },
+
+		// Product cluster candidates (scattered)
+		{ text: 'Ship MVP in 4 weeks, iterate weekly after', x: 140, y: 60 },
+		{ text: 'Enterprise needs SOC2 + SSO + audit logs before they even talk', x: 560, y: 430 },
+		{ text: 'API-first — let people build on top of us', x: 900, y: 620 },
+
+		// Team & resources (scattered)
+		{ text: "3 engineers, burning $40k/mo", x: 350, y: 280 },
+		{ text: 'Need to hire enterprise sales rep', x: 720, y: 300 },
+		{ text: "Can't do enterprise support with current team", x: 100, y: 380 },
+
+		// Tension bait (placed near wrong clusters to test agent)
+		{ text: 'Move fast and break things', x: 680, y: 680 },
+		{ text: 'Enterprise customers need 99.9% uptime SLA', x: 50, y: 170 },
+
+		// Orphan / insight bait
+		{ text: 'Are we trying to serve two masters??', x: 500, y: 140 },
+		{ text: 'YC Demo Day in 8 weeks — need a clear story', x: 250, y: 620 },
 	],
 }

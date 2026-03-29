@@ -149,11 +149,31 @@ export class AgentService {
 			let maybeIncompleteAction: AgentAction | null = null
 
 			let startTime = Date.now()
+			let loggedFirstChunk = false
+			let loggedFirstParse = false
+			let actionsYielded = 0
 			for await (const text of textStream) {
 				buffer += text
 
-				const partialObject = closeAndParseJson(buffer)
+				// Log first chunk to diagnose model output format
+				if (!loggedFirstChunk && buffer.length > 20) {
+					console.log('[AgentService] Raw buffer start:', buffer.substring(0, 200))
+					loggedFirstChunk = true
+				}
+
+				// Extract JSON from buffer — handle markdown code fences and leading text
+				const jsonBuffer = extractJson(buffer)
+
+				const partialObject = closeAndParseJson(jsonBuffer)
 				if (!partialObject) continue
+
+				if (!loggedFirstParse) {
+					console.log('[AgentService] First successful parse, action types:',
+						Array.isArray(partialObject.actions)
+							? partialObject.actions.map((a: any) => a?._type).filter(Boolean)
+							: 'no actions array')
+					loggedFirstParse = true
+				}
 
 				const actions = partialObject.actions
 				if (!Array.isArray(actions)) continue
@@ -195,6 +215,11 @@ export class AgentService {
 			}
 
 			// If we've finished receiving events, but there's still an incomplete event, we need to complete it
+			if (!loggedFirstParse) {
+				console.warn('[AgentService] Stream ended without any successful JSON parse. Raw buffer:', buffer.substring(0, 500))
+			} else if (actionsYielded === 0 && !maybeIncompleteAction) {
+				console.warn('[AgentService] Stream parsed but yielded 0 complete actions')
+			}
 			if (maybeIncompleteAction) {
 				yield {
 					...maybeIncompleteAction,
@@ -207,4 +232,34 @@ export class AgentService {
 			throw error
 		}
 	}
+}
+
+/**
+ * Extract JSON from a buffer that may contain markdown code fences or leading text.
+ * Models without prefill support (e.g. Claude 4.6) may wrap their JSON response
+ * in ```json ... ``` or add explanatory text before the JSON object.
+ */
+function extractJson(buffer: string): string {
+	let result = buffer
+
+	// Strip markdown code fences: ```json ... ``` or ``` ... ```
+	const fenceStart = result.indexOf('```')
+	if (fenceStart !== -1) {
+		const afterFence = result.indexOf('\n', fenceStart)
+		if (afterFence !== -1) {
+			result = result.substring(afterFence + 1)
+		}
+		const closingFence = result.lastIndexOf('```')
+		if (closingFence > 0) {
+			result = result.substring(0, closingFence)
+		}
+	}
+
+	// Skip any text before the first { (e.g. "Here is my response:\n{...")
+	const firstBrace = result.indexOf('{')
+	if (firstBrace > 0) {
+		result = result.substring(firstBrace)
+	}
+
+	return result
 }

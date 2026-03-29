@@ -15,13 +15,16 @@ export function DemoLoader({ disabled }: { disabled?: boolean }) {
 		}
 
 		editor.createShapes(
-			DEMO_SCENARIO.nodes.map((node) => ({
-				id: createShapeId(),
-				type: 'thought-node' as const,
-				x: node.x,
-				y: node.y,
-				props: { text: node.text, w: 240, h: 80 },
-			}))
+			DEMO_SCENARIO.nodes.map((node) => {
+				const w = Math.max(240, Math.min(320, node.text.length * 6.5))
+				return {
+					id: createShapeId(),
+					type: 'thought-node' as const,
+					x: node.x,
+					y: node.y,
+					props: { text: node.text, w, h: 80 },
+				}
+			})
 		)
 
 		editor.zoomToFit({ animation: { duration: 300 } })
