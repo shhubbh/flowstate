@@ -120,7 +120,7 @@ export class AgentService {
 			const { textStream } = streamText({
 				model,
 				messages,
-				maxOutputTokens: 8192,
+				maxOutputTokens: 16384,
 				temperature: 0,
 				providerOptions: {
 					anthropic: {

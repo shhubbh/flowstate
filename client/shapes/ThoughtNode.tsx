@@ -104,6 +104,36 @@ export class ThoughtNodeShapeUtil extends BaseBoxShapeUtil<ThoughtNodeShape> {
 		)
 	}
 
+	override toSvg(shape: ThoughtNodeShape) {
+		const maxChars = Math.floor((shape.props.w - 32) / 8)
+		const displayText =
+			shape.props.text.length > maxChars
+				? shape.props.text.slice(0, maxChars) + '\u2026'
+				: shape.props.text
+
+		return (
+			<g>
+				<rect
+					width={shape.props.w}
+					height={shape.props.h}
+					rx={6}
+					fill="#f5f0eb"
+					stroke="#d4cdc4"
+					strokeWidth={1}
+				/>
+				<text
+					x={16}
+					y={36}
+					fontSize={13.5}
+					fontFamily="Inter, sans-serif"
+					fill="#2c2824"
+				>
+					{displayText}
+				</text>
+			</g>
+		)
+	}
+
 	indicator(shape: ThoughtNodeShape) {
 		return (
 			<rect

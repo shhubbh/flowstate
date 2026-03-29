@@ -20,25 +20,32 @@ export const ScreenshotPartUtil = registerPromptPartUtil(
 				return contextBoundsBox.includes(bounds)
 			})
 
+			console.log(`[ScreenshotPartUtil] Found ${shapes.length} shapes for screenshot (total on page: ${editor.getCurrentPageShapesSorted().length})`)
+
 			if (shapes.length === 0) {
 				return { type: 'screenshot', screenshot: '' }
 			}
 
-			const largestDimension = Math.max(request.bounds.w, request.bounds.h)
-			const scale = largestDimension > 8000 ? 8000 / largestDimension : 1
+			try {
+				const largestDimension = Math.max(request.bounds.w, request.bounds.h)
+				const scale = largestDimension > 8000 ? 8000 / largestDimension : 1
 
-			const result = await editor.toImage(shapes, {
-				format: 'jpeg',
-				background: true,
-				bounds: Box.From(request.bounds),
-				padding: 0,
-				pixelRatio: 1,
-				scale,
-			})
+				const result = await editor.toImage(shapes, {
+					format: 'jpeg',
+					background: true,
+					bounds: Box.From(request.bounds),
+					padding: 0,
+					pixelRatio: 1,
+					scale,
+				})
 
-			return {
-				type: 'screenshot',
-				screenshot: await FileHelpers.blobToDataUrl(result.blob),
+				return {
+					type: 'screenshot',
+					screenshot: await FileHelpers.blobToDataUrl(result.blob),
+				}
+			} catch (e) {
+				console.warn('[ScreenshotPartUtil] Screenshot capture failed, continuing without screenshot:', e)
+				return { type: 'screenshot', screenshot: '' }
 			}
 		}
 	}
