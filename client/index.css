@@ -33,6 +33,10 @@
 /* tldraw canvas background override */
 .tl-background { background: var(--tm-canvas) !important; }
 
+/* Override tldraw's cool-tinted grey to warm secondary for dark canvas readability */
+.tl-theme__dark .tl-text-shape__wrapper { color: var(--tm-text-primary); }
+.tl-theme__dark .tl-arrow-label { color: var(--tm-text-primary); }
+
 * {
 	box-sizing: border-box;
 	overscroll-behavior: none;

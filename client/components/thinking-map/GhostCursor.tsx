@@ -15,31 +15,44 @@ export function GhostCursor() {
 		if (isGenerating) {
 			setFadingOut(false)
 
-			// Collect thought-node shapes, sort top-to-bottom then left-to-right
 			const shapes = editor.getCurrentPageShapes().filter((s) => s.type === 'thought-node')
 			if (shapes.length === 0) return
 
-			const sorted = [...shapes].sort((a, b) => {
-				const dy = a.y - b.y
-				if (Math.abs(dy) > 20) return dy
-				return a.x - b.x
-			})
+			// Shuffle shapes using Fisher-Yates for a non-repetitive random order
+			const shuffled = [...shapes]
+			for (let i = shuffled.length - 1; i > 0; i--) {
+				const j = Math.floor(Math.random() * (i + 1))
+				;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+			}
+
+			// Small random offset so cursor doesn't land on the exact same pixel each visit
+			const jitter = () => (Math.random() - 0.5) * 24
 
 			indexRef.current = 0
-			// Set initial position
-			const first = sorted[0]
-			setPosition({ x: first.x - 12, y: first.y - 8 })
+			const first = shuffled[0]
+			setPosition({ x: first.x - 12 + jitter(), y: first.y - 8 + jitter() })
 
-			// Advance to next node every 400ms
-			intervalRef.current = window.setInterval(() => {
-				indexRef.current = (indexRef.current + 1) % sorted.length
-				const shape = sorted[indexRef.current]
-				setPosition({ x: shape.x - 12, y: shape.y - 8 })
-			}, 400)
+			// Schedule moves with varying dwell times (300-600ms) for organic feel
+			const scheduleNext = () => {
+				indexRef.current = (indexRef.current + 1) % shuffled.length
+				// Re-shuffle when we've visited every node
+				if (indexRef.current === 0) {
+					for (let i = shuffled.length - 1; i > 0; i--) {
+						const j = Math.floor(Math.random() * (i + 1))
+						;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+					}
+				}
+				const shape = shuffled[indexRef.current]
+				setPosition({ x: shape.x - 12 + jitter(), y: shape.y - 8 + jitter() })
+				const delay = 300 + Math.random() * 300
+				intervalRef.current = window.setTimeout(scheduleNext, delay)
+			}
+			const initialDelay = 300 + Math.random() * 300
+			intervalRef.current = window.setTimeout(scheduleNext, initialDelay)
 		} else {
 			// Agent finished — fade out
 			if (intervalRef.current !== null) {
-				clearInterval(intervalRef.current)
+				clearTimeout(intervalRef.current)
 				intervalRef.current = null
 			}
 			if (position) {
@@ -54,7 +67,7 @@ export function GhostCursor() {
 
 		return () => {
 			if (intervalRef.current !== null) {
-				clearInterval(intervalRef.current)
+				clearTimeout(intervalRef.current)
 				intervalRef.current = null
 			}
 		}
