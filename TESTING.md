@@ -15,6 +15,8 @@
 npx vitest run          # run all tests once
 npx vitest              # watch mode
 npx vitest run test/diff-utils.test.ts  # run a specific file
+npx vitest run test/api-stream-handler.test.ts test/agent-service-stream.test.ts  # handoff stream regressions
+npm run build           # production build sanity check
 ```
 
 ## Test directory
@@ -22,6 +24,10 @@ npx vitest run test/diff-utils.test.ts  # run a specific file
 ```
 test/
 ├── setup.ts              # Test setup (jest-dom matchers)
+├── agent-runtime-status.test.ts
+├── agent-service-stream.test.ts
+├── api-stream-handler.test.ts
+├── blurry-shape.test.ts
 ├── undo-manager.test.ts  # UndoManager class tests
 ├── diff-utils.test.ts    # computeHandoffDiff tests
 └── *.regression-*.test.ts  # QA regression tests (auto-generated)
@@ -38,7 +44,7 @@ test/
 ## Test layers
 
 - **Unit tests:** Pure logic (undo-manager, diff-utils, paste handler logic)
-- **Integration tests:** Component interactions (future, with @testing-library/react)
+- **Integration tests:** Stream handler behavior, provider wiring, and component interactions
 - **Smoke tests:** Vitest can run basic import/render checks
 - **E2E tests:** Browser-based via /qa skill (gstack browse)
 
@@ -49,3 +55,13 @@ test/
 - Error handling: write a test that triggers the error
 - Conditionals (if/else, switch): test BOTH paths
 - Never commit code that makes existing tests fail
+
+## Handoff stream regression commands
+
+If you touch handoff transport or provider streaming, run:
+
+```bash
+npx vitest run test/api-stream-handler.test.ts test/agent-service-stream.test.ts
+npx vitest run
+npm run build
+```

@@ -1,4 +1,4 @@
-# Flowstate:-
+# Flowstate
 
 A spatial co-thinking tool where an AI agent and a founder jointly build and reshape a living map of strategic decisions — through gesture, not chat.
 
@@ -58,34 +58,56 @@ The space IS the interface.
 
 ---
 
+## Current Prototype Status
+
+- Local-dev-first thinking map prototype. AI features currently run through the local Vite dev server.
+- Browser persistence is intentionally disabled for stability right now, so each visit starts fresh.
+- The bottom bar exposes the working loop: **Load Demo**, **Handoff**, text channel, **Undo**, and **Last diff**.
+- If the default Anthropic provider is not configured, the app shows an AI readiness banner instead of pretending handoff worked.
+- The agent currently draws its handoff output with standard tldraw primitives: grey `geo` cluster frames, `text` labels and annotations, and `arrow` connections and tensions.
+
+---
+
 ## Quick Start
 
-Requires [Node.js](https://nodejs.org/) v18+.
+Requires [Node.js](https://nodejs.org/) `20.19+` or `22.12+`.
 
 ```bash
-git clone <repo-url>
-cd tacoma
+git clone https://github.com/shhubbh/flowstate.git
+cd flowstate
 npm install
-cp .env.example .env.local     # then add your API keys
-npm run dev                    # starts on localhost:3000
+echo "ANTHROPIC_API_KEY=xxxx" > .env.local
+npm run dev
 ```
 
-Add at least your Anthropic key to `.env.local`:
+- Open [localhost:3000](http://localhost:3000).
+- Hit **Load Demo** to populate the canvas with strategic fragments.
+- Drag thought nodes around to restructure the map.
+- Hit **Handoff** to let the agent regroup, connect, and annotate the canvas.
+- Use the text channel (pencil icon) when gesture is not enough.
+- Use **Undo** to roll back the last handoff and **Last diff** to reopen the latest change summary.
 
-```
-ANTHROPIC_API_KEY=sk-ant-...
-# Optional: add these for GPT or Gemini model support
-# OPENAI_API_KEY=sk-...
-# GOOGLE_API_KEY=AI...
-```
+Optional provider setup:
 
-Open [localhost:3000](http://localhost:3000). Hit **Load Demo** to populate the canvas with strategic fragments. Drag nodes around to restructure. Hit **Handoff** to let the agent rethink the map. Use the text channel (pencil icon) to ask follow-up questions.
+- `ANTHROPIC_API_KEY` is required for the default model.
+- `OPENAI_API_KEY` and `GOOGLE_API_KEY` are optional, only needed for non-default provider work.
+- `.env.example` is available if you want a fuller template, but the one-line `.env.local` command above is the fastest path for a fresh clone.
+
+---
+
+## Recent Reliability Fix
+
+The biggest recent handoff bug is fixed.
+
+The failure looked fake-successful: the cursor moved, the agent animation ran, and then nothing changed on the canvas. The root cause was an SSE transport bug in `/api/stream`. The server treated the POST request as dead as soon as the request body finished, so the response stream stopped before the first `data:` event reached the browser.
+
+That path now uses response-close lifecycle handling, request abort propagation, and regression tests. The result: `/api/stream` now emits real streamed actions again, and handoff resumes producing visible canvas mutations. Full write-up: [docs/current-status.md](docs/current-status.md).
 
 ---
 
 ## Built With
 
-[tldraw](https://tldraw.dev) canvas SDK, React, Vite, Tailwind, and Claude. Three custom shapes — ThoughtNode (draggable text cards), ClusterShape (named group containers), and AgentAnnotation (semantic badges for tensions, insights, and questions). The visual identity is called Dark Observatory: dark canvas, glass-morphism nodes, grain texture, and semantic color that only appears when it carries meaning.
+[tldraw](https://tldraw.dev) canvas SDK, React, Vite, and AI SDK provider integrations with Anthropic as the default local model path. `ThoughtNode` remains the main custom shape the user works with directly. Current agent handoff output is rendered with standard tldraw `geo`, `text`, and `arrow` artifacts tagged by note metadata. Legacy `ClusterShape` and `AgentAnnotation` files still exist in the repo, but they are not the primary handoff artifact path today. The visual identity is called Dark Observatory: dark canvas, glass-morphism nodes, grain texture, and semantic color that only appears when it carries meaning.
 
 ---
 
@@ -93,8 +115,10 @@ Open [localhost:3000](http://localhost:3000). Hit **Load Demo** to populate the 
 
 | Document | What it covers |
 |----------|---------------|
+| [Current implementation status](docs/current-status.md) | Current product behavior, runtime setup, and the handoff streaming fix history |
 | [Problem Space — narrative](docs/problem-space-narrative.md) | The readable version of how chat fails, and why |
 | [Problem Space — full analysis](docs/problem-space-final.md) | Five failure lenses, eight required properties, three personas, design brief |
-| [Solution — narrative](docs/solution-narrative.md) | The hackathon pitch: what would you build from first principles? |
-| [Solution — V1 design](docs/solution-space-v1.md) | Paradigm design: spatial model, agent co-ownership, handoff, versioning |
+| [Solution — narrative](docs/solution-narrative.md) | Historical narrative / pitch doc for the original hackathon framing |
+| [Solution — V1 design](docs/solution-space-v1.md) | Historical design doc for the early interaction model |
+| [Implementation plan](docs/implementation-plan.md) | Historical implementation plan from the earlier prototype phase |
 | [DESIGN.md](DESIGN.md) | Full visual design system (Dark Observatory) |

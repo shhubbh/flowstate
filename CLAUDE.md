@@ -24,3 +24,13 @@ Run tests: `npx vitest run` | Test directory: `test/` | See TESTING.md for detai
 - When adding error handling, write a test that triggers the error
 - When adding a conditional (if/else, switch), write tests for BOTH paths
 - Never commit code that makes existing tests fail
+
+## Handoff transport guardrails
+- If you touch `/api/stream`, `scripts/vite-api-plugin.ts`, or `worker/do/AgentService.ts`, run `npx vitest run test/api-stream-handler.test.ts test/agent-service-stream.test.ts`.
+- Do not use request-body lifecycle flags like `req.destroyed` as the SSE liveness signal. Use response-close and abort propagation instead.
+- The current handoff loop depends on `/api/status`, `/api/stream`, and the standard artifact notes:
+  - `artifact:cluster-frame`
+  - `artifact:cluster-label`
+  - `artifact:annotation`
+  - `artifact:connection`
+  - `artifact:tension`
