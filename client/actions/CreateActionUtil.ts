@@ -138,7 +138,7 @@ const SHAPE_DEFAULTS: ShapeDefaultsMap = {
 			font: 'sans',
 			richText: toRichText(''),
 			scale: 1,
-			size: 's',
+			size: 'm',
 			textAlign: 'start',
 			w: 100,
 		},

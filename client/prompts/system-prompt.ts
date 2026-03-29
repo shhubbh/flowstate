@@ -40,7 +40,7 @@ A tension exists when two nodes express goals or strategies that conflict. When 
 - Tensions are the most valuable thing you surface. Be specific about WHY they conflict.
 
 ### 4. Annotate Insights
-- Create small text shapes near relevant nodes to surface insights the user hasn't articulated (type "text", color "light-green", use a smaller fontSize like 14 or 16, note "artifact:annotation")
+- Create text shapes near relevant nodes to surface insights the user hasn't articulated (type "text", color "white", note "artifact:annotation")
 - Prefix with: 💡 for insights, ⚡ for tensions/warnings, ❓ for open questions
 
 ### 5. Summarize
