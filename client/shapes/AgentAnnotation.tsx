@@ -106,7 +106,7 @@ export class AgentAnnotationShapeUtil extends BaseBoxShapeUtil<AgentAnnotationSh
 								position: 'absolute',
 								bottom: 'calc(100% + 6px)',
 								left: '50%',
-								transform: 'translateX(-50%)',
+								transform: 'translateX(-50%) translateY(4px)',
 								borderRadius: 6,
 								padding: '6px 10px',
 								fontSize: 12,
@@ -117,7 +117,7 @@ export class AgentAnnotationShapeUtil extends BaseBoxShapeUtil<AgentAnnotationSh
 								textOverflow: 'ellipsis',
 								pointerEvents: 'none',
 								opacity: 0,
-								transition: 'opacity 0.15s ease',
+								transition: 'opacity 0.15s ease, transform 0.15s ease',
 								fontWeight: 400,
 								zIndex: 1000,
 							}}
@@ -129,6 +129,7 @@ export class AgentAnnotationShapeUtil extends BaseBoxShapeUtil<AgentAnnotationSh
 				<style>{`
 					.agent-annotation-badge:hover .agent-annotation-tooltip {
 						opacity: 1 !important;
+						transform: translateX(-50%) translateY(0) !important;
 					}
 				`}</style>
 			</HTMLContainer>

@@ -167,7 +167,7 @@ function convertTextShapeToTldrawShape(
 		focusedShape.maxWidth !== undefined && focusedShape.maxWidth !== null
 			? false
 			: (defaultTextShape.props?.autoSize ?? true)
-	const font = defaultTextShape.props?.font ?? 'draw'
+	const font = defaultTextShape.props?.font ?? 'sans'
 
 	let richText
 	if (focusedShape.text !== undefined) {
@@ -333,7 +333,7 @@ function convertLineShapeToTldrawShape(
 					},
 				},
 				color: asColor(focusedShape.color ?? defaultLineShape.props?.color ?? 'black'),
-				dash: defaultLineShape.props?.dash ?? 'draw',
+				dash: defaultLineShape.props?.dash ?? 'solid',
 				scale: defaultLineShape.props?.scale ?? 1,
 				spline: defaultLineShape.props?.spline ?? 'line',
 			},
@@ -388,13 +388,13 @@ function convertArrowShapeToTldrawShape(
 			dash:
 				asColor(focusedShape.color ?? defaultArrowShape.props?.color ?? 'black') === 'red'
 					? 'dashed'
-					: (defaultArrowShape.props?.dash ?? 'draw'),
+					: (defaultArrowShape.props?.dash ?? 'solid'),
 			elbowMidPoint: defaultArrowShape.props?.elbowMidPoint ?? 0.5,
 			end: { x: x2 - minX, y: y2 - minY },
 			fill: defaultArrowShape.props?.fill ?? 'none',
-			font: defaultArrowShape.props?.font ?? 'draw',
+			font: defaultArrowShape.props?.font ?? 'sans',
 			kind: defaultArrowShape.props?.kind ?? 'arc',
-			labelColor: defaultArrowShape.props?.labelColor ?? 'black',
+			labelColor: defaultArrowShape.props?.labelColor ?? 'white',
 			labelPosition: defaultArrowShape.props?.labelPosition ?? 0.5,
 			richText,
 			scale: defaultArrowShape.props?.scale ?? 1,
@@ -503,13 +503,13 @@ function convertGeoShapeToTldrawShape(
 			props: {
 				align: focusedShape.textAlign ?? defaultGeoShape.props?.align ?? 'middle',
 				color: asColor(focusedShape.color ?? defaultGeoShape.props?.color ?? 'black'),
-				dash: defaultGeoShape.props?.dash ?? 'draw',
+				dash: defaultGeoShape.props?.dash ?? 'solid',
 				fill,
-				font: defaultGeoShape.props?.font ?? 'draw',
+				font: defaultGeoShape.props?.font ?? 'sans',
 				geo: shapeType,
 				growY: defaultGeoShape.props?.growY ?? 0,
 				h: focusedShape.h ?? defaultGeoShape.props?.h ?? 100,
-				labelColor: defaultGeoShape.props?.labelColor ?? 'black',
+				labelColor: defaultGeoShape.props?.labelColor ?? 'white',
 				richText,
 				scale: defaultGeoShape.props?.scale ?? 1,
 				size: defaultGeoShape.props?.size ?? 's',
@@ -560,10 +560,10 @@ function convertNoteShapeToTldrawShape(
 				richText,
 				size: defaultNoteShape.props?.size ?? 's',
 				align: defaultNoteShape.props?.align ?? 'middle',
-				font: defaultNoteShape.props?.font ?? 'draw',
+				font: defaultNoteShape.props?.font ?? 'sans',
 				fontSizeAdjustment: defaultNoteShape.props?.fontSizeAdjustment ?? 0,
 				growY: defaultNoteShape.props?.growY ?? 0,
-				labelColor: defaultNoteShape.props?.labelColor ?? 'black',
+				labelColor: defaultNoteShape.props?.labelColor ?? 'white',
 				scale: defaultNoteShape.props?.scale ?? 1,
 				url: defaultNoteShape.props?.url ?? '',
 				verticalAlign: defaultNoteShape.props?.verticalAlign ?? 'middle',

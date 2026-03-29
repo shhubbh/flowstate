@@ -25,10 +25,10 @@ Do ALL of these. The user expects to see the canvas visibly transformed.
 - MOVE related nodes closer together physically (use the "move" action)
 - Create a large rectangle behind each cluster (type "rectangle", color "grey", fill "none", large enough to enclose the grouped nodes with padding, note "artifact:cluster-frame")
 - Use "sendToBack" on each rectangle so it appears behind the nodes
-- Create a text label above each cluster rectangle naming the group (type "text", color "black", anchor "bottom-center", note "artifact:cluster-label")
+- Create a text label above each cluster rectangle naming the group (type "text", color "white", anchor "bottom-center", note "artifact:cluster-label")
 
 ### 2. Draw Connections
-- Create arrow shapes between nodes that have dependencies or causal relationships (color "black", use fromId/toId to bind to actual node shape IDs, note "artifact:connection")
+- Create arrow shapes between nodes that have dependencies or causal relationships (color "white", use fromId/toId to bind to actual node shape IDs, note "artifact:connection")
 - Add a brief label on each arrow explaining the relationship
 
 ### 3. Flag Tensions
@@ -40,7 +40,7 @@ A tension exists when two nodes express goals or strategies that conflict. When 
 - Tensions are the most valuable thing you surface. Be specific about WHY they conflict.
 
 ### 4. Annotate Insights
-- Create small text shapes near relevant nodes to surface insights the user hasn't articulated (type "text", color "grey", use a smaller fontSize like 14 or 16, note "artifact:annotation")
+- Create text shapes near relevant nodes to surface insights the user hasn't articulated (type "text", color "white", note "artifact:annotation")
 - Prefix with: 💡 for insights, ⚡ for tensions/warnings, ❓ for open questions
 
 ### 5. Summarize
