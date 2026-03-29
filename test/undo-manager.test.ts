@@ -17,11 +17,12 @@ describe('UndoManager', () => {
 		expect(um.canUndo()).toBe(false)
 	})
 
-	it('can take and restore a snapshot', () => {
+	it('can begin, commit, and restore a snapshot', () => {
 		const um = new UndoManager()
 		const editor = mockEditor('state-1')
 
-		um.takeSnapshot(editor)
+		um.beginSnapshot(editor)
+		um.commitSnapshot()
 		expect(um.canUndo()).toBe(true)
 
 		const restored = um.restore(editor)
@@ -42,7 +43,8 @@ describe('UndoManager', () => {
 		const um = new UndoManager()
 
 		for (let i = 1; i <= 5; i++) {
-			um.takeSnapshot(mockEditor(`state-${i}`))
+			um.beginSnapshot(mockEditor(`state-${i}`))
+			um.commitSnapshot()
 		}
 
 		// Stack should have 3 entries (states 3, 4, 5)
@@ -61,11 +63,31 @@ describe('UndoManager', () => {
 
 	it('clear empties the stack', () => {
 		const um = new UndoManager()
-		um.takeSnapshot(mockEditor())
-		um.takeSnapshot(mockEditor())
+		um.beginSnapshot(mockEditor())
+		um.commitSnapshot()
+		um.beginSnapshot(mockEditor())
+		um.commitSnapshot()
 		expect(um.canUndo()).toBe(true)
 
 		um.clear()
+		expect(um.canUndo()).toBe(false)
+	})
+
+	it('discarding a pending snapshot keeps undo history empty', () => {
+		const um = new UndoManager()
+		um.beginSnapshot(mockEditor('state-1'))
+		um.discardSnapshot()
+
+		expect(um.canUndo()).toBe(false)
+	})
+
+	it('can roll back a pending snapshot without committing it', () => {
+		const um = new UndoManager()
+		const editor = mockEditor('state-rollback')
+
+		um.beginSnapshot(editor)
+		expect(um.rollbackPending(editor)).toBe(true)
+		expect(editor.store.loadStoreSnapshot).toHaveBeenCalledWith({ data: 'state-rollback' })
 		expect(um.canUndo()).toBe(false)
 	})
 })

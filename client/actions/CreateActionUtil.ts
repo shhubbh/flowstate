@@ -75,6 +75,11 @@ export const CreateActionUtil = registerActionUtil(
 			})
 
 			if (!result.shape) return
+			result.shape.meta = {
+				...(result.shape.meta ?? {}),
+				agentGenerated: true,
+				agentArtifact: true,
+			}
 
 			editor.createShape(result.shape)
 

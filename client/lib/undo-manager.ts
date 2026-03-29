@@ -7,17 +7,37 @@ interface UndoEntry {
 
 export class UndoManager {
 	private stack: UndoEntry[] = []
+	private pendingEntry: UndoEntry | null = null
 	private maxDepth = 3
 
-	takeSnapshot(editor: Editor) {
-		this.stack.push({
+	beginSnapshot(editor: Editor) {
+		this.pendingEntry = {
 			snapshot: editor.store.getStoreSnapshot(),
 			timestamp: Date.now(),
-		})
+		}
+	}
+
+	commitSnapshot() {
+		if (!this.pendingEntry) return false
+		this.stack.push(this.pendingEntry)
+		this.pendingEntry = null
 		if (this.stack.length > this.maxDepth) this.stack.shift()
+		return true
+	}
+
+	discardSnapshot() {
+		this.pendingEntry = null
+	}
+
+	rollbackPending(editor: Editor): boolean {
+		if (!this.pendingEntry) return false
+		editor.store.loadStoreSnapshot(this.pendingEntry.snapshot)
+		this.pendingEntry = null
+		return true
 	}
 
 	restore(editor: Editor): boolean {
+		this.pendingEntry = null
 		const entry = this.stack.pop()
 		if (!entry) return false
 		editor.store.loadStoreSnapshot(entry.snapshot)
@@ -30,5 +50,6 @@ export class UndoManager {
 
 	clear() {
 		this.stack = []
+		this.pendingEntry = null
 	}
 }

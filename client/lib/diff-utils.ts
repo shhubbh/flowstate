@@ -1,4 +1,5 @@
-import type { TLShape, TLShapeId } from 'tldraw'
+import type { TLGeoShape, TLShape, TLShapeId, TLTextShape } from 'tldraw'
+import { getAgentArtifactNote } from './agent-artifacts'
 
 export interface HandoffDiffSummary {
 	clustersCreated: number
@@ -25,16 +26,12 @@ export function computeHandoffDiff(
 	// Find created shapes (in after but not in before)
 	for (const [id, shape] of afterMap) {
 		if (!beforeShapes.has(id)) {
-			switch (shape.type) {
-				case 'cluster':
-					clustersCreated++
-					break
-				case 'arrow':
-					connectionsCreated++
-					break
-				case 'agent-annotation':
-					annotationsCreated++
-					break
+			if (isClusterFrame(shape)) {
+				clustersCreated++
+			} else if (shape.type === 'arrow') {
+				connectionsCreated++
+			} else if (isAnnotation(shape)) {
+				annotationsCreated++
 			}
 		}
 	}
@@ -77,4 +74,33 @@ export function computeHandoffDiff(
 		totalChanges,
 		summaryText,
 	}
+}
+
+function isClusterFrame(shape: TLShape): boolean {
+	if (getAgentArtifactNote(shape) === 'artifact:cluster-frame') {
+		return true
+	}
+
+	if (shape.type !== 'geo') return false
+
+	const geoShape = shape as TLGeoShape
+	return geoShape.props.geo === 'rectangle' && geoShape.props.color === 'grey'
+}
+
+function isAnnotation(shape: TLShape): boolean {
+	if (getAgentArtifactNote(shape) === 'artifact:annotation') {
+		return true
+	}
+
+	if (shape.type !== 'text') return false
+
+	const textShape = shape as TLTextShape
+	const plainText = extractTextContent(textShape)
+	return plainText.startsWith('💡') || plainText.startsWith('⚡') || plainText.startsWith('❓')
+}
+
+function extractTextContent(shape: TLTextShape): string {
+	const richText = (shape.props.richText as { content?: Array<{ text?: string }> } | undefined)?.content
+	if (!Array.isArray(richText)) return ''
+	return richText.map((part) => part.text ?? '').join('')
 }

@@ -18,6 +18,10 @@ interface AgentEnv {
 	GOOGLE_API_KEY: string
 }
 
+interface AgentStreamOptions {
+	abortSignal?: AbortSignal
+}
+
 export class AgentService {
 	openai: OpenAIProvider
 	anthropic: AnthropicProvider
@@ -35,9 +39,12 @@ export class AgentService {
 		return this[provider](modelDefinition.id)
 	}
 
-	async *stream(prompt: AgentPrompt): AsyncGenerator<Streaming<AgentAction>> {
+	async *stream(
+		prompt: AgentPrompt,
+		opts: AgentStreamOptions = {}
+	): AsyncGenerator<Streaming<AgentAction>> {
 		try {
-			for await (const event of this.streamActions(prompt)) {
+			for await (const event of this.streamActions(prompt, opts)) {
 				yield event
 			}
 		} catch (error: any) {
@@ -46,7 +53,10 @@ export class AgentService {
 		}
 	}
 
-	private async *streamActions(prompt: AgentPrompt): AsyncGenerator<Streaming<AgentAction>> {
+	private async *streamActions(
+		prompt: AgentPrompt,
+		{ abortSignal }: AgentStreamOptions = {}
+	): AsyncGenerator<Streaming<AgentAction>> {
 		const modelName = getModelName(prompt)
 		const model = this.getModel(modelName)
 
@@ -122,6 +132,7 @@ export class AgentService {
 				messages,
 				maxOutputTokens: 16384,
 				temperature: 0,
+				abortSignal,
 				providerOptions: {
 					anthropic: {
 						thinking: { type: 'disabled' },
@@ -151,7 +162,7 @@ export class AgentService {
 			let startTime = Date.now()
 			let loggedFirstChunk = false
 			let loggedFirstParse = false
-			let actionsYielded = 0
+			let yieldedAnyAction = false
 			for await (const text of textStream) {
 				buffer += text
 
@@ -184,6 +195,7 @@ export class AgentService {
 				if (actions.length > cursor) {
 					const action = actions[cursor - 1] as AgentAction
 					if (action) {
+						yieldedAnyAction = true
 						yield {
 							...action,
 							complete: true,
@@ -206,6 +218,7 @@ export class AgentService {
 					maybeIncompleteAction = action
 
 					// Yield the potentially incomplete event
+					yieldedAnyAction = true
 					yield {
 						...action,
 						complete: false,
@@ -215,12 +228,16 @@ export class AgentService {
 			}
 
 			// If we've finished receiving events, but there's still an incomplete event, we need to complete it
-			if (!loggedFirstParse) {
-				console.warn('[AgentService] Stream ended without any successful JSON parse. Raw buffer:', buffer.substring(0, 500))
-			} else if (actionsYielded === 0 && !maybeIncompleteAction) {
+			if (!loggedFirstParse && !abortSignal?.aborted) {
+				console.warn(
+					'[AgentService] Stream ended without any successful JSON parse. Raw buffer:',
+					buffer.substring(0, 500)
+				)
+			} else if (!yieldedAnyAction && !maybeIncompleteAction && !abortSignal?.aborted) {
 				console.warn('[AgentService] Stream parsed but yielded 0 complete actions')
 			}
 			if (maybeIncompleteAction) {
+				yieldedAnyAction = true
 				yield {
 					...maybeIncompleteAction,
 					complete: true,

@@ -29,7 +29,7 @@ export const SetMyViewActionUtil = registerActionUtil(
 				h: action.h,
 			})
 
-			this.agent.interrupt({
+			const result = this.agent.interrupt({
 				input: {
 					bounds,
 					agentMessages: [
@@ -37,6 +37,10 @@ export const SetMyViewActionUtil = registerActionUtil(
 					],
 				},
 			})
+
+			if (result) {
+				void result.catch((error) => this.agent.onError(error))
+			}
 		}
 	}
 )
