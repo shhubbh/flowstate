@@ -135,7 +135,7 @@ const SHAPE_DEFAULTS: ShapeDefaultsMap = {
 		props: {
 			autoSize: true,
 			color: 'white',
-			font: 'draw',
+			font: 'sans',
 			richText: toRichText(''),
 			scale: 1,
 			size: 's',
@@ -148,7 +148,7 @@ const SHAPE_DEFAULTS: ShapeDefaultsMap = {
 		props: {
 			size: 's',
 			color: 'white',
-			dash: 'draw',
+			dash: 'solid',
 			points: {
 				a1: {
 					id: 'a1',
@@ -174,11 +174,11 @@ const SHAPE_DEFAULTS: ShapeDefaultsMap = {
 			arrowheadStart: 'none',
 			bend: 0,
 			color: 'white',
-			dash: 'draw',
+			dash: 'solid',
 			elbowMidPoint: 0.5,
 			end: { x: 100, y: 0 },
 			fill: 'none',
-			font: 'draw',
+			font: 'sans',
 			kind: 'arc',
 			labelColor: 'white',
 			labelPosition: 0.5,
@@ -193,9 +193,9 @@ const SHAPE_DEFAULTS: ShapeDefaultsMap = {
 		props: {
 			align: 'middle',
 			color: 'white',
-			dash: 'draw',
+			dash: 'solid',
 			fill: 'none',
-			font: 'draw',
+			font: 'sans',
 			geo: 'rectangle',
 			growY: 0,
 			h: 100,
@@ -215,7 +215,7 @@ const SHAPE_DEFAULTS: ShapeDefaultsMap = {
 			richText: toRichText(''),
 			size: 's',
 			align: 'middle',
-			font: 'draw',
+			font: 'sans',
 			fontSizeAdjustment: 0,
 			growY: 0,
 			labelColor: 'white',
